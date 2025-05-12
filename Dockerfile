@@ -1,13 +1,24 @@
-# Étape 1: build l'app
-FROM node:18-alpine AS builder
+# Use Node.js image
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-COPY . .
+
+COPY package.json package-lock.json ./
 RUN npm install
+
+COPY . .
 RUN npm run build
 
-# Étape 2: lancer le serveur Next.js
-FROM node:18-alpine
+# Production image
+FROM node:20-alpine
+
 WORKDIR /app
+
+COPY --from=builder /app/package.json /app/package-lock.json ./
+RUN npm install --omit=dev
+
 COPY --from=builder /app ./
+
 EXPOSE 3000
-CMD ["npm", "start"]
+
+CMD ["npm", "run", "start"]
