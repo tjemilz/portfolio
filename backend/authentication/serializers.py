@@ -12,6 +12,7 @@ User = get_user_model()
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Custom JWT token serializer that includes additional user info.
+    Sends ntfy notification on successful login.
     """
     
     @classmethod
@@ -27,6 +28,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     def validate(self, attrs):
         data = super().validate(attrs)
+        
+        # Send login notification
+        try:
+            from .notifications import ntfy_service
+            request = self.context.get('request')
+            if request:
+                ntfy_service.notify_login_success(self.user, request)
+        except Exception as e:
+            # Don't block login if notification fails
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to send login notification: {e}")
         
         # Add user info to response
         data['user'] = {

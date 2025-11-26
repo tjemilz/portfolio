@@ -175,3 +175,42 @@ SIMPLE_JWT = {
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
+
+# ===========================================
+# SECURITY SETTINGS (Production)
+# ===========================================
+
+# HTTPS/SSL Settings (activer en production avec HTTPS)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Session & Cookie Security
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Security Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# HSTS (HTTP Strict Transport Security) - activer en production avec HTTPS
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)  # 31536000 for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
+SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=False, cast=bool)
+
+# Rate limiting (requires django-ratelimit or similar)
+# API_RATE_LIMIT = '100/hour'
+
+# ===========================================
+# NTFY Notifications (Security Alerts)
+# ===========================================
+NTFY_ENABLED = config('NTFY_ENABLED', default=False, cast=bool)
+NTFY_SERVER_URL = config('NTFY_SERVER_URL', default='https://ntfy.sh')
+NTFY_TOPIC_SUCCESS = config('NTFY_TOPIC_SUCCESS', default='portfolio-login-success')
+NTFY_TOPIC_FAILED = config('NTFY_TOPIC_FAILED', default='portfolio-login-failed')
+NTFY_AUTH_TOKEN = config('NTFY_AUTH_TOKEN', default=None)  # For private topics

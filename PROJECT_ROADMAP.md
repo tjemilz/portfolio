@@ -697,7 +697,80 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 | Phase 4 | 4-5 jours | ✅ Terminé | Upload & Gestion Admin |
 | Phase 5 | 2-3 jours | ✅ Terminé | Téléchargement & Optimisations |
 | **Phase 6** | **2-3 jours** | **✅ Terminé** | **Design & UX** |
-| **Total** | **18-24 jours** | | ~4 semaines |
+| **Phase 7** | **1-2 jours** | **✅ Terminé** | **Sécurité & Déploiement** |
+| **Total** | **20-26 jours** | | ~5 semaines |
+
+---
+
+## 📋 PHASE 7 : Sécurité & Déploiement (TERMINÉ)
+
+### ✅ Étape 7.1 : Audit de Sécurité
+
+**Objectif**: Sécuriser l'application avant la mise en production
+
+**Actions réalisées**:
+- [x] Headers de sécurité (X-Frame-Options, X-Content-Type-Options, XSS-Protection)
+- [x] Cookies sécurisés (HttpOnly, Secure, SameSite)
+- [x] Configuration CSRF et Session sécurisées
+- [x] Rate limiting sur les endpoints sensibles (nginx)
+- [x] GZIP compression
+- [x] Protection des fichiers media uploadés
+
+---
+
+### ✅ Étape 7.2 : Notifications ntfy
+
+**Objectif**: Recevoir des alertes en temps réel pour les événements de sécurité
+
+**Actions réalisées**:
+- [x] Service de notifications ntfy (`backend/authentication/notifications.py`)
+- [x] Notifications de connexion réussie (topic: `portfolio-login-success`)
+- [x] Notifications de connexion échouée (topic: `portfolio-login-failed`, priorité haute)
+- [x] Extraction de l'IP réelle via Cloudflare headers
+- [x] Détection du pays via `CF-IPCountry`
+- [x] Signals Django pour les événements d'authentification
+
+**Configuration**:
+```python
+NTFY_ENABLED = True
+NTFY_SERVER_URL = 'https://ntfy.paulatreides.fr'
+NTFY_TOPIC_SUCCESS = 'portfolio-login-success'
+NTFY_TOPIC_FAILED = 'portfolio-login-failed'
+```
+
+---
+
+### ✅ Étape 7.3 : Configuration Docker
+
+**Objectif**: Containeriser l'application pour un déploiement facile
+
+**Fichiers créés**:
+- [x] `docker-compose.yml` - Stack complète (backend, frontend, nginx)
+- [x] `backend/Dockerfile` - Django avec Gunicorn
+- [x] `Dockerfile` - Next.js frontend
+- [x] `nginx/nginx.conf` - Reverse proxy avec headers Cloudflare
+- [x] `.env.example` - Variables d'environnement de développement
+- [x] `.env.docker.example` - Variables pour Docker
+
+---
+
+### ✅ Étape 7.4 : Déploiement Proxmox
+
+**Objectif**: Déployer sur un container LXC Proxmox avec Cloudflare Tunnel
+
+**Documentation**: `DEPLOYMENT.md`
+
+**Architecture**:
+```
+Internet → Cloudflare Tunnel → nginx (port 80) → Docker containers
+```
+
+**Avantages**:
+- ✅ Pas de ports ouverts sur le réseau
+- ✅ SSL automatique géré par Cloudflare
+- ✅ Protection DDoS incluse
+- ✅ IP réelle du visiteur via `CF-Connecting-IP`
+- ✅ Pays du visiteur via `CF-IPCountry`
 
 ---
 
