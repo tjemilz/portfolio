@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📸 Portfolio Photographique - Emilien Fourgnier
 
-## Getting Started
+Un portfolio photographique moderne avec système d'authentification multi-niveaux, galleries publiques et privées.
 
-First, run the development server:
+## 🏗️ Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+portfolio/
+├── app/                    # Frontend Next.js
+│   ├── components/         # Composants React réutilisables
+│   ├── hooks/              # Hooks personnalisés (useGalleries, useAuth)
+│   ├── lib/                # Utilitaires (api.js client centralisé)
+│   ├── providers/          # Context providers (AuthProvider)
+│   ├── login/              # Page de connexion
+│   ├── bio/                # Page bio
+│   ├── bw/                 # Galerie Noir & Blanc
+│   ├── streets/            # Galerie Street Photography
+│   └── explore/            # Galerie Exploration
+├── backend/                # Backend Django
+│   ├── authentication/     # App authentification (JWT, utilisateurs)
+│   ├── galleries/          # App galleries (galeries, images)
+│   ├── portfolio_api/      # Configuration Django
+│   └── media/              # Stockage des images
+└── public/                 # Assets statiques Next.js
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Démarrage Rapide
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Prérequis
+- Node.js 18+
+- Python 3.10+
+- pip
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Backend (Django)
 
-## Learn More
+```bash
+# Aller dans le dossier backend
+cd backend
 
-To learn more about Next.js, take a look at the following resources:
+# Créer un environnement virtuel
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ou
+.\venv\Scripts\activate  # Windows
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Installer les dépendances
+pip install -r requirements.txt
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Configurer les variables d'environnement
+cp .env.example .env  # ou créer .env manuellement
 
-## Deploy on Vercel
+# Appliquer les migrations
+python manage.py migrate
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Créer un superutilisateur
+python manage.py createsuperuser
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Synchroniser les galeries depuis les dossiers
+python manage.py sync_galleries
+
+# Lancer le serveur
+python manage.py runserver
+```
+
+### Frontend (Next.js)
+
+```bash
+# À la racine du projet
+npm install
+
+# Lancer le serveur de développement
+npm run dev
+```
+
+Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+
+## 🔐 Système d'Authentification
+
+| Type | Accès | Permissions |
+|------|-------|-------------|
+| **PUBLIC** | Non authentifié | Voir galleries publiques uniquement |
+| **PRIVATE** | Authentifié (invité par admin) | Voir galleries publiques + privées selon le groupe |
+| **ADMIN** | Authentifié (super utilisateur) | Accès complet + gestion utilisateurs + upload photos |
+
+## 📡 API Endpoints
+
+### Authentification
+- `POST /api/auth/login/` - Connexion (retourne tokens JWT)
+- `POST /api/auth/logout/` - Déconnexion
+- `POST /api/auth/refresh/` - Rafraîchir le token
+- `GET /api/auth/me/` - Profil utilisateur
+
+### Galleries
+- `GET /api/galleries/` - Liste des galleries accessibles
+- `GET /api/galleries/{slug}/` - Détails d'une gallery
+- `GET /api/galleries/{slug}/images/` - Images d'une gallery
+- `GET /api/galleries/public/` - Galleries publiques par type
+
+## 🛠️ Configuration
+
+### Variables d'environnement Backend (backend/.env)
+```env
+DEBUG=True
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///db.sqlite3
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+### Variables d'environnement Frontend (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_MEDIA_URL=http://localhost:8000/media
+```
+
+## 📚 Technologies
+
+- **Frontend**: Next.js 15, React 19, Tailwind CSS
+- **Backend**: Django 5, Django REST Framework, SimpleJWT
+- **Base de données**: SQLite (dev), PostgreSQL (prod recommandé)
+
+## 📄 License
+
+MIT

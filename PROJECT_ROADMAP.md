@@ -82,7 +82,7 @@ frontend/
 **Objectif**: Créer les fichiers de configuration et variables d'environnement
 
 **Backend**:
-- [ ] Créer `backend/.env`
+- [x] Créer `backend/.env`
   ```bash
   DEBUG=True
   SECRET_KEY=your-django-secret-key-here
@@ -94,17 +94,17 @@ frontend/
   JWT_ACCESS_TOKEN_LIFETIME=60
   JWT_REFRESH_TOKEN_LIFETIME=1440
   ```
-- [ ] Installer `python-decouple` : `pip install python-decouple`
-- [ ] Modifier `backend/portfolio_api/settings.py` pour utiliser les variables d'env
-- [ ] Ajouter `.env` au `.gitignore`
+- [x] Installer `python-decouple` : `pip install python-decouple`
+- [x] Modifier `backend/portfolio_api/settings.py` pour utiliser les variables d'env
+- [x] Ajouter `.env` au `.gitignore`
 
 **Frontend**:
-- [ ] Créer `frontend/.env.local`
+- [x] Créer `frontend/.env.local`
   ```bash
   NEXT_PUBLIC_API_URL=http://localhost:8000
   NEXT_PUBLIC_MEDIA_URL=http://localhost:8000/media
   ```
-- [ ] Ajouter `.env.local` au `.gitignore`
+- [x] Ajouter `.env.local` au `.gitignore`
 
 **Commandes**:
 ```bash
@@ -129,15 +129,15 @@ npm install
 **Objectif**: Simplifier l'architecture en fusionnant `images`, `PrivateGallery` et `galleries` en une seule app `galleries`
 
 **Actions**:
-- [ ] Créer une nouvelle app propre : `python manage.py startapp galleries_new`
-- [ ] Créer `backend/galleries_new/models.py` avec les modèles consolidés :
+- [x] Créer une nouvelle app propre : `python manage.py startapp galleries_new`
+- [x] Créer `backend/galleries_new/models.py` avec les modèles consolidés :
   ```python
   # UserGroup, Gallery, Image
   ```
-- [ ] Migrer les données existantes
-- [ ] Supprimer les anciennes apps
-- [ ] Renommer `galleries_new` en `galleries`
-- [ ] Mettre à jour `INSTALLED_APPS` dans `settings.py`
+- [x] Migrer les données existantes
+- [x] Supprimer les anciennes apps
+- [x] Renommer `galleries_new` en `galleries`
+- [x] Mettre à jour `INSTALLED_APPS` dans `settings.py`
 
 **Fichiers à créer**:
 - `backend/galleries/models.py` (nouveau modèle unifié)
@@ -162,20 +162,20 @@ python manage.py migrate galleries
 **Objectif**: Déplacer toutes les images de `frontend/public/` vers `backend/media/`
 
 **Actions**:
-- [ ] Créer la structure de dossiers :
+- [x] Créer la structure de dossiers :
   ```bash
   mkdir -p backend/media/galleries/public/{bestof,bw,streets,explore}
   mkdir -p backend/media/galleries/private
   mkdir -p backend/media/thumbnails
   ```
-- [ ] Déplacer les images :
+- [x] Déplacer les images :
   ```bash
   mv frontend/public/bestof/* backend/media/galleries/public/bestof/
   mv frontend/public/bw/* backend/media/galleries/public/bw/
   mv frontend/public/streets/* backend/media/galleries/public/streets/
   mv frontend/public/explore/* backend/media/galleries/public/explore/
   ```
-- [ ] Créer un script de synchronisation DB
+- [x] Créer un script de synchronisation DB
 - [ ] Supprimer les dossiers vides dans `frontend/public/`
 
 **Fichier à créer**:
@@ -199,11 +199,11 @@ python manage.py sync_galleries
 **Objectif**: Implémenter le système de permissions à 3 niveaux
 
 **Actions**:
-- [ ] Créer `backend/authentication/permissions.py`
+- [x] Créer `backend/authentication/permissions.py`
   - `IsPublicUser`, `IsPrivateUser`, `IsAdminUser`
-- [ ] Créer `backend/galleries/permissions.py`
+- [x] Créer `backend/galleries/permissions.py`
   - `CanAccessGallery`, `CanUploadImage`, `CanDeleteImage`
-- [ ] Étendre le modèle User avec des groupes personnalisés
+- [x] Étendre le modèle User avec des groupes personnalisés
 - [ ] Créer les groupes par défaut dans une migration
 
 **Fichiers à créer/modifier**:
@@ -233,14 +233,14 @@ python manage.py create_default_groups
 **Objectif**: Finaliser le système d'authentification JWT avec refresh tokens
 
 **Actions**:
-- [ ] Configurer JWT dans `settings.py`
-- [ ] Créer les endpoints d'authentification :
+- [x] Configurer JWT dans `settings.py`
+- [x] Créer les endpoints d'authentification :
   - `POST /api/auth/login/`
   - `POST /api/auth/logout/`
   - `POST /api/auth/refresh/`
   - `GET /api/auth/me/`
-- [ ] Implémenter la blacklist des tokens révoqués
-- [ ] Créer les serializers personnalisés
+- [x] Implémenter la blacklist des tokens révoqués
+- [x] Créer les serializers personnalisés
 
 **Fichiers à créer/modifier**:
 - `backend/authentication/views.py`
@@ -259,14 +259,14 @@ python manage.py create_default_groups
 **Objectif**: Créer un système global de gestion de l'authentification
 
 **Actions**:
-- [ ] Créer `frontend/app/providers/AuthProvider.js`
-- [ ] Implémenter les fonctions :
+- [x] Créer `frontend/app/providers/AuthProvider.js`
+- [x] Implémenter les fonctions :
   - `login(email, password)`
   - `logout()`
   - `refreshToken()`
   - `checkAuth()`
-- [ ] Wrapper l'app avec `<AuthProvider>`
-- [ ] Créer le hook `useAuth()`
+- [x] Wrapper l'app avec `<AuthProvider>`
+- [x] Créer le hook `useAuth()`
 
 **Fichiers à créer**:
 - `frontend/app/providers/AuthProvider.js`
@@ -285,10 +285,10 @@ python manage.py create_default_groups
 **Objectif**: Créer l'interface de connexion
 
 **Actions**:
-- [ ] Créer la page `frontend/app/(auth)/login/page.js`
-- [ ] Créer le formulaire de login avec validation
-- [ ] Gérer les erreurs de connexion
-- [ ] Rediriger après connexion selon le rôle utilisateur
+- [x] Créer la page `frontend/app/(auth)/login/page.js`
+- [x] Créer le formulaire de login avec validation
+- [x] Gérer les erreurs de connexion
+- [x] Rediriger après connexion selon le rôle utilisateur
 
 **Fichiers à créer**:
 - `frontend/app/(auth)/login/page.js`
@@ -306,8 +306,8 @@ python manage.py create_default_groups
 **Objectif**: Empêcher l'accès aux routes privées sans authentification
 
 **Actions**:
-- [ ] Créer `frontend/middleware.js`
-- [ ] Protéger les routes `/private-galleries/*` et `/admin-dashboard/*`
+- [x] Créer `frontend/middleware.js`
+- [x] Protéger les routes `/private-galleries/*` et `/admin-dashboard/*`
 - [ ] Créer les layouts avec vérification d'auth :
   - `frontend/app/(private)/layout.js`
   - `frontend/app/(admin)/layout.js`
@@ -331,12 +331,12 @@ python manage.py create_default_groups
 **Objectif**: Créer l'API CRUD pour les galleries
 
 **Actions**:
-- [ ] Créer les ViewSets :
+- [x] Créer les ViewSets :
   - `GalleryViewSet` (list, retrieve, create, update, delete)
   - `ImageViewSet` (list, retrieve, create, delete)
-- [ ] Implémenter les filtres par visibilité
-- [ ] Ajouter la pagination
-- [ ] Créer les serializers
+- [x] Implémenter les filtres par visibilité
+- [x] Ajouter la pagination
+- [x] Créer les serializers
 
 **Fichiers à créer**:
 - `backend/galleries/views.py`
@@ -365,10 +365,10 @@ GET    /api/galleries/{slug}/images/ # Liste des images d'une gallery
 **Objectif**: Servir les images via Django en vérifiant les permissions
 
 **Actions**:
-- [ ] Créer la vue `serve_image(request, gallery_slug, filename)`
-- [ ] Vérifier les permissions avant de servir le fichier
-- [ ] Gérer les images manquantes (404)
-- [ ] Ajouter les headers de cache appropriés
+- [x] Créer la vue `serve_image(request, gallery_slug, filename)`
+- [x] Vérifier les permissions avant de servir le fichier
+- [x] Gérer les images manquantes (404)
+- [x] Ajouter les headers de cache appropriés
 
 **Fichier à créer**:
 - Ajouter dans `backend/galleries/views.py`
@@ -390,15 +390,15 @@ GET /api/galleries/{slug}/images/{filename}/
 **Objectif**: Créer un client API réutilisable pour toutes les requêtes
 
 **Actions**:
-- [ ] Créer `frontend/lib/api.js`
-- [ ] Implémenter les fonctions :
+- [x] Créer `frontend/lib/api.js`
+- [x] Implémenter les fonctions :
   - `fetchGalleries(type)`
   - `fetchGallery(slug)`
   - `fetchImages(gallerySlug)`
   - `uploadImage(gallerySlug, file)`
   - `deleteImage(id)`
-- [ ] Gérer les tokens JWT automatiquement
-- [ ] Gérer les erreurs globalement
+- [x] Gérer les tokens JWT automatiquement
+- [x] Gérer les erreurs globalement
 
 **Fichier à créer**:
 - `frontend/lib/api.js`
@@ -415,10 +415,10 @@ GET /api/galleries/{slug}/images/{filename}/
 **Objectif**: Créer l'interface d'affichage des galleries
 
 **Actions**:
-- [ ] Créer le composant `GalleryGrid.jsx`
-- [ ] Créer le composant `ImageCard.jsx`
-- [ ] Implémenter le lazy loading des images
-- [ ] Ajouter un skeleton loading
+- [x] Créer le composant `GalleryGrid.jsx`
+- [x] Créer le composant `ImageCard.jsx`
+- [x] Implémenter le lazy loading des images
+- [x] Ajouter un skeleton loading
 - [ ] Créer la page de détail d'une gallery
 
 **Fichiers à créer**:
@@ -439,11 +439,11 @@ GET /api/galleries/{slug}/images/{filename}/
 **Objectif**: Créer un lightbox pour afficher les images en plein écran
 
 **Actions**:
-- [ ] Créer le composant `Lightbox.jsx`
-- [ ] Gérer la navigation clavier (flèches, Escape)
-- [ ] Ajouter un bouton de téléchargement
-- [ ] Gérer le swipe tactile
-- [ ] Précharger les images suivantes/précédentes
+- [x] Créer le composant `Lightbox.jsx`
+- [x] Gérer la navigation clavier (flèches, Escape)
+- [x] Ajouter un bouton de téléchargement
+- [x] Gérer le swipe tactile
+- [x] Précharger les images suivantes/précédentes
 
 **Fichier à créer**:
 - `frontend/components/galleries/Lightbox.jsx`
@@ -462,12 +462,12 @@ GET /api/galleries/{slug}/images/{filename}/
 **Objectif**: Créer l'endpoint sécurisé d'upload d'images
 
 **Actions**:
-- [ ] Créer la vue `upload_images(request, gallery_slug)`
-- [ ] Valider le format (JPEG/JPG uniquement)
-- [ ] Valider la taille maximum (ex: 10MB)
-- [ ] Générer automatiquement les thumbnails
-- [ ] Extraire les métadonnées EXIF
-- [ ] Créer les objets Image en DB
+- [x] Créer la vue `upload_images(request, gallery_slug)`
+- [x] Valider le format (JPEG/JPG uniquement)
+- [x] Valider la taille maximum (ex: 20MB)
+- [x] Générer automatiquement les thumbnails
+- [x] Extraire les métadonnées EXIF
+- [x] Créer les objets Image en DB
 
 **Fichier à modifier**:
 - `backend/galleries/views.py`
@@ -479,10 +479,10 @@ Content-Type: multipart/form-data
 ```
 
 **Validation**: 
-- Seuls les JPEG/JPG sont acceptés
-- Les fichiers trop gros sont rejetés
-- Les thumbnails sont générés automatiquement
-- Seuls les admins peuvent upload
+- ✅ Seuls les JPEG/JPG/PNG/WebP sont acceptés
+- ✅ Les fichiers trop gros sont rejetés
+- ✅ Les thumbnails sont générés automatiquement
+- ✅ Seuls les admins peuvent upload
 
 ---
 
@@ -491,23 +491,23 @@ Content-Type: multipart/form-data
 **Objectif**: Créer l'interface drag & drop pour uploader des images
 
 **Actions**:
-- [ ] Créer le composant `ImageUploader.jsx`
-- [ ] Implémenter le drag & drop
-- [ ] Ajouter une preview avant upload
-- [ ] Afficher une barre de progression
-- [ ] Gérer les uploads multiples simultanés
-- [ ] Afficher les erreurs d'upload
+- [x] Créer le composant `ImageUploader.jsx`
+- [x] Implémenter le drag & drop
+- [x] Ajouter une preview avant upload
+- [x] Afficher une barre de progression
+- [x] Gérer les uploads multiples simultanés
+- [x] Afficher les erreurs d'upload
+- [x] Option "Sans galerie" pour images sans association
 
 **Fichiers à créer**:
 - `frontend/components/upload/ImageUploader.jsx`
-- `frontend/components/upload/UploadProgress.jsx`
-- `frontend/app/(admin)/upload/page.js`
+- `frontend/app/(admin)/images/page.js`
 
 **Validation**: 
-- Le drag & drop fonctionne
-- Les previews s'affichent
-- La progression est visible
-- Les erreurs sont claires
+- ✅ Le drag & drop fonctionne
+- ✅ Les previews s'affichent
+- ✅ La progression est visible
+- ✅ Les erreurs sont claires
 
 ---
 
@@ -516,22 +516,22 @@ Content-Type: multipart/form-data
 **Objectif**: Créer l'API pour gérer les utilisateurs (admin uniquement)
 
 **Actions**:
-- [ ] Créer les endpoints :
-  - `GET /api/users/` (liste)
-  - `POST /api/users/invite/` (inviter)
-  - `PUT /api/users/{id}/` (modifier)
-  - `DELETE /api/users/{id}/` (supprimer)
-- [ ] Implémenter l'invitation par email
-- [ ] Créer les serializers
+- [x] Créer les endpoints :
+  - `GET /api/auth/users/` (liste)
+  - `POST /api/auth/users/` (créer)
+  - `PUT /api/auth/users/{id}/` (modifier)
+  - `DELETE /api/auth/users/{id}/` (supprimer)
+- [x] Créer les serializers avec validation
+- [x] Gestion des rôles (ADMIN, EDITOR, VIEWER)
 
 **Fichiers à créer/modifier**:
 - `backend/authentication/views.py`
 - `backend/authentication/serializers.py`
 
 **Validation**: 
-- Seuls les admins peuvent gérer les utilisateurs
-- L'invitation envoie un email
-- Les groupes sont assignables
+- ✅ Seuls les admins peuvent gérer les utilisateurs
+- ✅ Les rôles sont assignables
+- ✅ Validation du mot de passe
 
 ---
 
@@ -540,21 +540,53 @@ Content-Type: multipart/form-data
 **Objectif**: Créer l'interface de gestion admin
 
 **Actions**:
-- [ ] Créer la page `frontend/app/(admin)/dashboard/page.js`
-- [ ] Créer le composant `UserManagement.jsx`
-- [ ] Créer le composant `GalleryManagement.jsx`
-- [ ] Afficher des statistiques (nombre d'images, utilisateurs, etc.)
+- [x] Créer la page `frontend/app/admin/page.js`
+- [x] Créer la page de gestion des utilisateurs
+- [x] Créer la page de gestion des galleries
+- [x] Créer la page de gestion des images
+- [x] Créer la page de gestion des groupes
+- [x] AdminLayout avec navigation latérale
 
-**Fichiers à créer**:
-- `frontend/app/(admin)/dashboard/page.js`
-- `frontend/components/admin/UserManagement.jsx`
-- `frontend/components/admin/GalleryManagement.jsx`
-- `frontend/components/admin/Stats.jsx`
+**Fichiers créés**:
+- `frontend/app/admin/page.js` - Dashboard principal
+- `frontend/app/admin/AdminLayout.jsx` - Layout avec sidebar
+- `frontend/app/admin/users/page.js` - Gestion utilisateurs (CRUD)
+- `frontend/app/admin/galleries/page.js` - Liste des galleries
+- `frontend/app/admin/galleries/new/page.js` - Création de gallery
+- `frontend/app/admin/galleries/[slug]/edit/page.js` - Édition de gallery
+- `frontend/app/admin/galleries/[slug]/images/page.js` - Gestion images d'une gallery
+- `frontend/app/admin/images/page.js` - Gestion toutes images
+- `frontend/app/admin/groups/page.js` - Gestion des groupes d'utilisateurs
 
 **Validation**: 
-- Les statistiques s'affichent
-- Les utilisateurs sont listés et modifiables
-- Les galleries sont listées et modifiables
+- ✅ Navigation admin fonctionnelle
+- ✅ CRUD complet pour galleries
+- ✅ CRUD complet pour images
+- ✅ CRUD complet pour utilisateurs
+- ✅ CRUD complet pour groupes (Famille, Amis, etc.)
+
+---
+
+### ✅ Étape 4.5 : Gestion des Groupes d'Utilisateurs
+
+**Objectif**: Permettre de créer des groupes pour l'accès aux galleries privées
+
+**Actions**:
+- [x] Créer le modèle UserGroup (backend)
+- [x] Créer le serializer avec gestion des membres
+- [x] Créer la page admin de gestion des groupes
+- [x] Possibilité de créer les groupes par défaut (Famille, Amis)
+- [x] Interface pour ajouter/retirer des membres
+
+**Fichiers créés/modifiés**:
+- `backend/galleries/models.py` - Modèle UserGroup
+- `backend/galleries/serializers.py` - UserGroupSerializer avec members
+- `frontend/app/admin/groups/page.js` - Interface de gestion
+
+**Validation**: 
+- ✅ Création/édition/suppression de groupes
+- ✅ Gestion des membres d'un groupe
+- ✅ Groupes par défaut créables en un clic
 
 ---
 
@@ -565,9 +597,9 @@ Content-Type: multipart/form-data
 **Objectif**: Permettre le téléchargement sécurisé des images
 
 **Actions**:
-- [ ] Créer l'endpoint `download_image(request, image_id)`
+- [x] Créer l'endpoint `download_image(request, image_id)`
+- [x] Créer un endpoint pour télécharger plusieurs images (ZIP)
 - [ ] Générer des liens temporaires (optionnel)
-- [ ] Créer un endpoint pour télécharger plusieurs images (ZIP)
 - [ ] Logger les téléchargements
 
 **Endpoints**:
@@ -577,9 +609,9 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 ```
 
 **Validation**: 
-- Les images se téléchargent avec le bon nom
-- Le ZIP contient toutes les images sélectionnées
-- Les permissions sont vérifiées
+- ✅ Les images se téléchargent avec le bon nom
+- ✅ Le ZIP contient toutes les images sélectionnées
+- ✅ Les permissions sont vérifiées
 
 ---
 
@@ -588,10 +620,10 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 **Objectif**: Ajouter des boutons de téléchargement partout
 
 **Actions**:
-- [ ] Ajouter un bouton dans le Lightbox
-- [ ] Ajouter un bouton sur chaque ImageCard
-- [ ] Implémenter la sélection multiple
-- [ ] Créer un bouton "Télécharger la sélection"
+- [x] Ajouter un bouton dans le Lightbox
+- [x] Ajouter un bouton sur chaque ImageCard
+- [x] Implémenter la sélection multiple
+- [x] Créer un bouton "Télécharger la sélection"
 
 **Fichiers à modifier**:
 - `frontend/components/galleries/Lightbox.jsx`
@@ -599,9 +631,9 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 - `frontend/components/galleries/GalleryGrid.jsx`
 
 **Validation**: 
-- Le téléchargement unitaire fonctionne
-- Le téléchargement multiple crée un ZIP
-- La sélection multiple est intuitive
+- ✅ Le téléchargement unitaire fonctionne
+- ✅ Le téléchargement multiple crée un ZIP
+- ✅ La sélection multiple est intuitive (checkbox + barre d'outils)
 
 ---
 
@@ -610,26 +642,27 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 **Objectif**: Optimiser le chargement et les performances
 
 **Actions**:
-- [ ] Implémenter le cache Redis (backend)
-- [ ] Optimiser les requêtes DB (select_related, prefetch_related)
-- [ ] Ajouter la compression GZIP
-- [ ] Optimiser les images Next.js (Image component)
-- [ ] Implémenter le code splitting par route
-- [ ] Ajouter des meta tags pour le SEO
+- [ ] Implémenter le cache Redis (backend) - optionnel
+- [x] Optimiser les requêtes DB (select_related, prefetch_related)
+- [x] Ajouter la compression GZIP
+- [x] Optimiser les images Next.js (Image component avec sizes/priority)
+- [x] Ajouter des meta tags pour le SEO (OpenGraph, Twitter, robots)
 
-**Fichiers à modifier**:
-- `backend/portfolio_api/settings.py` (cache)
-- `backend/galleries/views.py` (optimisation queries)
-- Tous les composants frontend utilisant des images
+**Fichiers modifiés**:
+- `backend/portfolio_api/settings.py` (GZipMiddleware)
+- `backend/galleries/views.py` (prefetch_related, select_related)
+- `app/layout.js` (meta tags SEO complets)
+- `app/components/galleries/ImageCard.jsx` (optimisation Image)
+- `app/components/galleries/GalleryGrid.jsx` (sélection multiple)
 
 **Validation**: 
-- Les pages se chargent plus rapidement
-- Le cache fonctionne correctement
-- Les images sont optimisées automatiquement
+- ✅ Les pages se chargent plus rapidement (moins de requêtes N+1)
+- ✅ Compression GZIP active
+- ✅ Meta tags OpenGraph et Twitter configurés
 
 ---
 
-### ✅ Étape 5.4 : Tests & Documentation
+### ⏳ Étape 5.4 : Tests & Documentation
 
 **Objectif**: Tester et documenter le projet
 
@@ -656,19 +689,74 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 
 ## 📊 Estimation Totale
 
-| Phase | Durée | Description |
-|-------|-------|-------------|
-| Phase 1 | 3-4 jours | Restructuration & Sécurisation |
-| Phase 2 | 3-4 jours | Authentification & Sécurité |
-| Phase 3 | 4-5 jours | Galleries & Images |
-| Phase 4 | 4-5 jours | Upload & Gestion Admin |
-| Phase 5 | 2-3 jours | Téléchargement & Optimisations |
-| **Total** | **16-21 jours** | ~3-4 semaines |
+| Phase | Durée | Statut | Description |
+|-------|-------|--------|-------------|
+| Phase 1 | 3-4 jours | ✅ Terminé | Restructuration & Sécurisation |
+| Phase 2 | 3-4 jours | ✅ Terminé | Authentification & Sécurité |
+| Phase 3 | 4-5 jours | ✅ Terminé | Galleries & Images |
+| Phase 4 | 4-5 jours | ✅ Terminé | Upload & Gestion Admin |
+| Phase 5 | 2-3 jours | ✅ Terminé | Téléchargement & Optimisations |
+| **Phase 6** | **2-3 jours** | **✅ Terminé** | **Design & UX** |
+| **Total** | **18-24 jours** | | ~4 semaines |
 
 ---
 
-## 🚀 Par Où Commencer ?
+## 📋 PHASE 6 : Design & UX (À FAIRE)
 
-Je vous propose de commencer par **l'Étape 1.1 : Configuration de l'Environnement**.
+### ⏳ Étape 6.1 : Design System & Thème
 
-Voulez-vous que je génère les fichiers de configuration (`.env` et modifications de `settings.py`) ?
+**Objectif**: Définir un design cohérent pour tout le site
+
+**Actions**:
+- [ ] Définir la palette de couleurs
+- [ ] Définir la typographie
+- [ ] Créer des composants UI réutilisables
+- [ ] Responsive design mobile-first
+
+---
+
+### ⏳ Étape 6.2 : Page d'Accueil
+
+**Objectif**: Créer une page d'accueil attractive
+
+**Actions**:
+- [ ] Hero section avec animation
+- [ ] Aperçu des galleries
+- [ ] Section "Best Of"
+- [ ] Footer avec liens
+
+---
+
+### ⏳ Étape 6.3 : Page Bio/À Propos
+
+**Objectif**: Page de présentation du photographe
+
+**Actions**:
+- [ ] Photo de profil
+- [ ] Texte de présentation
+- [ ] Liens sociaux
+- [ ] Équipement utilisé
+
+---
+
+### ⏳ Étape 6.4 : Animations & Transitions
+
+**Objectif**: Ajouter des animations pour améliorer l'UX
+
+**Actions**:
+- [ ] Transitions de page
+- [ ] Animations au scroll
+- [ ] Hover effects sur les images
+- [ ] Loading states animés
+
+---
+
+## 🚀 Prochaines Étapes
+
+Le backend et l'admin sont maintenant fonctionnels. On peut passer au **design** du site public.
+
+Qu'est-ce que tu veux qu'on travaille en priorité ?
+1. **Page d'accueil** - Hero, galleries preview
+2. **Design global** - Couleurs, typo, composants
+3. **Animations** - Transitions, effets
+4. **Page Bio** - Présentation

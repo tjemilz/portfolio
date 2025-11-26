@@ -1,36 +1,34 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { galleriesApi } from '../lib/api';
 
+/**
+ * Hook to fetch images from the "bestof" gallery
+ */
 export function useBestOfImages() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchImages() {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/bestof-images');
-        
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        if (data.images) {
-          setImages(data.images);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des meilleures images:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
+  const fetchImages = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await galleriesApi.getImages('bestof');
+      setImages(data);
+    } catch (err) {
+      console.error('Error fetching bestof images:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    fetchImages();
   }, []);
 
-  return { images, loading, error };
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  return { images, loading, error, refetch: fetchImages };
 }
