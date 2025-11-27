@@ -3,21 +3,15 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8000',
-        pathname: '/api/galleries/**',
+        protocol: 'https',
+        hostname: 'paulatreides.fr',
+        pathname: '/media/**',
       },
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '8000',
         pathname: '/media/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.vercel.app',
-        pathname: '/api/galleries/**',
       },
     ],
   },

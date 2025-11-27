@@ -3,8 +3,8 @@
  * Handles authentication tokens and common API patterns.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL || 'http://localhost:8000/media';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL || '/media';
 
 /**
  * Get stored access token

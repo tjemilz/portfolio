@@ -3,6 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Build arguments for Next.js public environment variables
+ARG NEXT_PUBLIC_API_URL=https://paulatreides.fr
+ARG NEXT_PUBLIC_MEDIA_URL=https://paulatreides.fr/media
+
+# Set as environment variables for the build
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_MEDIA_URL=$NEXT_PUBLIC_MEDIA_URL
+
 COPY package.json package-lock.json ./
 RUN npm install
 
