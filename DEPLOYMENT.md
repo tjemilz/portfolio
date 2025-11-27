@@ -325,6 +325,61 @@ tar -czvf media_backup.tar.gz backend/media/
 
 ---
 
+## 👤 Gestion des Utilisateurs
+
+### Créer un nouveau superutilisateur :
+```bash
+docker compose exec backend python manage.py createsuperuser
+```
+
+### Changer le mot de passe d'un utilisateur :
+```bash
+docker compose exec backend python manage.py changepassword <username>
+```
+
+### Modifier un utilisateur existant (username, email, mot de passe) :
+```bash
+docker compose exec backend python manage.py shell
+```
+
+Puis dans le shell Python :
+```python
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+# Récupérer l'utilisateur
+user = User.objects.get(username='ancien_username')
+
+# Modifier les informations
+user.username = 'nouveau_username'
+user.email = 'nouveau@email.com'
+user.set_password('NouveauMotDePasse123!')
+user.save()
+
+exit()
+```
+
+### Supprimer un utilisateur :
+```bash
+docker compose exec backend python manage.py shell -c "
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.get(username='username_a_supprimer').delete()
+"
+```
+
+### Lister tous les utilisateurs :
+```bash
+docker compose exec backend python manage.py shell -c "
+from django.contrib.auth import get_user_model
+User = get_user_model()
+for u in User.objects.all():
+    print(f'{u.username} - {u.email} - Admin: {u.is_superuser}')
+"
+```
+
+---
+
 ## 🔒 Sécurité Additionnelle
 
 ### Firewall (UFW) :

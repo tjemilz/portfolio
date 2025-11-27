@@ -334,8 +334,10 @@ class ImageViewSet(viewsets.ModelViewSet):
         return ImageSerializer
     
     def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_delete', 'update_galleries']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_delete', 'update_galleries', 'bulk_update_galleries']:
             return [CanUploadImage()]
+        if self.action in ['download', 'download_multiple']:
+            return [AllowAny()]
         return [IsAuthenticatedOrReadOnly()]
     
     def get_queryset(self):

@@ -418,8 +418,15 @@ export const imagesApi = {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to download images');
+      let errorMessage = 'Failed to download images';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || error.detail || errorMessage;
+      } catch (e) {
+        // Response might not be JSON
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     // Return the blob for download

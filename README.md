@@ -1,124 +1,241 @@
-# 📸 Portfolio Photographique - Emilien Fourgnier
+# 📸 Portfolio Photographique - paulatreides.fr
 
-Un portfolio photographique moderne avec système d'authentification multi-niveaux, galleries publiques et privées.
+Un portfolio photographique moderne avec système d'authentification multi-niveaux, galleries publiques et privées, et notifications de sécurité en temps réel.
+
+## ✨ Fonctionnalités
+
+- 🖼️ **Galleries dynamiques** - Publiques et privées avec contrôle d'accès par groupe
+- 🔐 **Authentification JWT** - Connexion sécurisée avec tokens
+- 📱 **Responsive** - Optimisé mobile et desktop
+- 🎨 **Lightbox** - Visualisation plein écran avec navigation clavier
+- ⬇️ **Téléchargement** - Images individuelles ou multiples (ZIP)
+- 🔔 **Notifications ntfy** - Alertes de connexion en temps réel
+- 🚀 **Optimisé** - Compression GZIP, lazy loading, SEO
+
+---
 
 ## 🏗️ Architecture
 
 ```
 portfolio/
-├── app/                    # Frontend Next.js
-│   ├── components/         # Composants React réutilisables
-│   ├── hooks/              # Hooks personnalisés (useGalleries, useAuth)
-│   ├── lib/                # Utilitaires (api.js client centralisé)
-│   ├── providers/          # Context providers (AuthProvider)
-│   ├── login/              # Page de connexion
-│   ├── bio/                # Page bio
-│   ├── bw/                 # Galerie Noir & Blanc
-│   ├── streets/            # Galerie Street Photography
-│   └── explore/            # Galerie Exploration
-├── backend/                # Backend Django
-│   ├── authentication/     # App authentification (JWT, utilisateurs)
-│   ├── galleries/          # App galleries (galeries, images)
+├── app/                    # Frontend Next.js 15
+│   ├── components/         # Composants React (Navbar, Footer, Galleries...)
+│   ├── hooks/              # Hooks (useGalleries, useBestOfImages)
+│   ├── lib/                # Client API centralisé
+│   ├── providers/          # AuthProvider (contexte utilisateur)
+│   ├── admin/              # Panel d'administration
+│   ├── gallery/[slug]/     # Pages galleries dynamiques
+│   └── login/              # Page de connexion
+├── backend/                # Backend Django 5
+│   ├── authentication/     # JWT, utilisateurs, notifications
+│   ├── galleries/          # Galleries, images, groupes
 │   ├── portfolio_api/      # Configuration Django
 │   └── media/              # Stockage des images
-└── public/                 # Assets statiques Next.js
+├── nginx/                  # Configuration reverse proxy
+├── docker-compose.yml      # Stack Docker complète
+├── DEPLOYMENT.md           # Guide de déploiement Proxmox
+└── PROJECT_ROADMAP.md      # Roadmap du projet
 ```
 
-## 🚀 Démarrage Rapide
+---
+
+## 🚀 Installation
 
 ### Prérequis
 - Node.js 18+
 - Python 3.10+
-- pip
+- Docker & Docker Compose (pour la production)
 
-### Backend (Django)
+### Développement local
+
+#### Backend (Django)
 
 ```bash
-# Aller dans le dossier backend
 cd backend
 
-# Créer un environnement virtuel
+# Environnement virtuel
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
 .\venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
 
-# Installer les dépendances
+# Dépendances
 pip install -r requirements.txt
 
-# Configurer les variables d'environnement
-cp .env.example .env  # ou créer .env manuellement
+# Configuration
+cp .env.example .env
+# Éditer .env avec vos valeurs
 
-# Appliquer les migrations
+# Base de données
 python manage.py migrate
-
-# Créer un superutilisateur
 python manage.py createsuperuser
-
-# Synchroniser les galeries depuis les dossiers
 python manage.py sync_galleries
 
-# Lancer le serveur
+# Lancer
 python manage.py runserver
 ```
 
-### Frontend (Next.js)
+#### Frontend (Next.js)
 
 ```bash
 # À la racine du projet
 npm install
-
-# Lancer le serveur de développement
 npm run dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+Ouvrir [http://localhost:3000](http://localhost:3000)
+
+---
 
 ## 🔐 Système d'Authentification
 
 | Type | Accès | Permissions |
 |------|-------|-------------|
-| **PUBLIC** | Non authentifié | Voir galleries publiques uniquement |
-| **PRIVATE** | Authentifié (invité par admin) | Voir galleries publiques + privées selon le groupe |
-| **ADMIN** | Authentifié (super utilisateur) | Accès complet + gestion utilisateurs + upload photos |
+| **PUBLIC** | Non authentifié | Galleries publiques uniquement |
+| **PRIVATE** | Utilisateur invité | Galleries publiques + privées (selon groupe) |
+| **ADMIN** | Super utilisateur | Accès complet + gestion + upload |
+
+---
 
 ## 📡 API Endpoints
 
 ### Authentification
-- `POST /api/auth/login/` - Connexion (retourne tokens JWT)
-- `POST /api/auth/logout/` - Déconnexion
-- `POST /api/auth/refresh/` - Rafraîchir le token
-- `GET /api/auth/me/` - Profil utilisateur
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `POST` | `/api/auth/login/` | Connexion (retourne JWT) |
+| `POST` | `/api/auth/logout/` | Déconnexion |
+| `POST` | `/api/auth/refresh/` | Rafraîchir le token |
+| `GET` | `/api/auth/me/` | Profil utilisateur |
 
 ### Galleries
-- `GET /api/galleries/` - Liste des galleries accessibles
-- `GET /api/galleries/{slug}/` - Détails d'une gallery
-- `GET /api/galleries/{slug}/images/` - Images d'une gallery
-- `GET /api/galleries/public/` - Galleries publiques par type
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/api/galleries/` | Liste des galleries accessibles |
+| `GET` | `/api/galleries/{slug}/` | Détails d'une gallery |
+| `GET` | `/api/galleries/{slug}/images/` | Images d'une gallery |
+| `GET` | `/api/galleries/public/` | Galleries publiques par type |
+| `GET` | `/api/galleries/best-of/` | Images "Best Of" |
 
-## 🛠️ Configuration
+### Images
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/api/images/{id}/download/` | Télécharger une image |
+| `POST` | `/api/images/download-multiple/` | Télécharger en ZIP |
+| `POST` | `/api/galleries/{slug}/upload/` | Upload (admin) |
 
-### Variables d'environnement Backend (backend/.env)
+### Administration
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/api/admin/users/` | Liste utilisateurs |
+| `POST` | `/api/admin/users/invite/` | Inviter un utilisateur |
+| `GET` | `/api/admin/groups/` | Liste des groupes |
+
+---
+
+## 🔔 Notifications ntfy
+
+Le système envoie des notifications push pour les événements de sécurité :
+
+| Événement | Topic | Priorité |
+|-----------|-------|----------|
+| Connexion réussie | `portfolio-login-success` | Normal |
+| Connexion échouée | `portfolio-login-failed` | Haute |
+
+**Configuration** (`backend/.env`) :
 ```env
-DEBUG=True
-SECRET_KEY=your-secret-key
-DATABASE_URL=sqlite:///db.sqlite3
-ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ALLOWED_ORIGINS=http://localhost:3000
+NTFY_ENABLED=True
+NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_TOPIC_SUCCESS=portfolio-login-success
+NTFY_TOPIC_FAILED=portfolio-login-failed
+NTFY_AUTH_TOKEN=tk_xxxxxxxx  # Optionnel
 ```
 
-### Variables d'environnement Frontend (.env.local)
+---
+
+## 🐳 Déploiement Docker
+
+### Variables d'environnement
+
+Créer `.env` à la racine :
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_MEDIA_URL=http://localhost:8000/media
+# Django
+DJANGO_SECRET_KEY=votre-clé-secrète-très-longue
+BACKEND_ALLOWED_HOSTS=paulatreides.fr,api.paulatreides.fr
+CORS_ALLOWED_ORIGINS=https://paulatreides.fr
+
+# Frontend
+NEXT_PUBLIC_API_URL=https://paulatreides.fr/api
+NEXT_PUBLIC_MEDIA_URL=https://paulatreides.fr/media
+
+# ntfy
+NTFY_ENABLED=True
+NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_TOPIC_SUCCESS=portfolio-login-success
+NTFY_TOPIC_FAILED=portfolio-login-failed
 ```
+
+### Lancer la stack
+
+```bash
+# Build et démarrage
+docker compose up -d --build
+
+# Logs
+docker compose logs -f
+
+# Arrêter
+docker compose down
+```
+
+### Avec Cloudflare Tunnel
+
+Voir [DEPLOYMENT.md](./DEPLOYMENT.md) pour le guide complet de déploiement sur Proxmox avec Cloudflare Tunnel.
+
+---
+
+## 🛠️ Commandes utiles
+
+### Backend
+```bash
+# Synchroniser les galleries depuis les dossiers
+python manage.py sync_galleries
+
+# Créer un superutilisateur
+python manage.py createsuperuser
+
+# Migrations
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Docker
+```bash
+# Voir les logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Reconstruire un service
+docker compose up -d --build backend
+
+# Exécuter une commande Django
+docker compose exec backend python manage.py sync_galleries
+```
+
+---
 
 ## 📚 Technologies
 
-- **Frontend**: Next.js 15, React 19, Tailwind CSS
-- **Backend**: Django 5, Django REST Framework, SimpleJWT
-- **Base de données**: SQLite (dev), PostgreSQL (prod recommandé)
+| Composant | Technologies |
+|-----------|--------------|
+| **Frontend** | Next.js 15, React 19, Tailwind CSS |
+| **Backend** | Django 5.2, Django REST Framework, SimpleJWT |
+| **Base de données** | SQLite |
+| **Serveur** | Gunicorn, Nginx |
+| **Conteneurisation** | Docker, Docker Compose |
+| **Tunnel** | Cloudflare Tunnel |
+| **Notifications** | ntfy (self-hosted) |
+
+---
 
 ## 📄 License
 
-MIT
+MIT - Emilien Fourgnier

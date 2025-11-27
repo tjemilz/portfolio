@@ -662,28 +662,26 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 
 ---
 
-### ⏳ Étape 5.4 : Tests & Documentation
+### ✅ Étape 5.4 : Tests & Documentation
 
 **Objectif**: Tester et documenter le projet
 
 **Actions**:
 - [ ] Écrire des tests unitaires backend (pytest)
 - [ ] Écrire des tests frontend (Jest/React Testing Library)
-- [ ] Créer la documentation utilisateur (README)
-- [ ] Créer la documentation technique (API docs)
+- [x] Créer la documentation utilisateur (README)
+- [x] Créer la documentation technique (DEPLOYMENT.md)
 - [ ] Tester sur différents navigateurs
 - [ ] Tester sur mobile
 
-**Fichiers à créer**:
-- `backend/galleries/tests.py`
-- `frontend/__tests__/`
-- `README.md` (utilisateur)
-- `TECHNICAL_DOCS.md` (développeur)
+**Fichiers créés/modifiés**:
+- `README.md` - Documentation complète du projet
+- `DEPLOYMENT.md` - Guide de déploiement Proxmox/Docker/Cloudflare
 
 **Validation**: 
-- Les tests passent tous
-- La documentation est claire
-- Le site fonctionne sur tous les navigateurs
+- ✅ La documentation est claire et complète
+- ⏳ Tests automatisés à venir
+- ⏳ Tests navigateurs/mobile à venir
 
 ---
 
