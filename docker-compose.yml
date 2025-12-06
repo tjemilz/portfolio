@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
     container_name: portfolio-backend
     restart: unless-stopped
+    labels:
+      service: "portfolio-backend"
+      description: "Django REST API for Portfolio"
     environment:
       - DEBUG=False
       - SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -19,6 +22,7 @@ services:
     volumes:
       - ./backend/media:/app/media
       - ./backend/db.sqlite3:/app/db.sqlite3
+      - ./backend/logs:/app/logs
       - backend_static:/app/staticfiles
     expose:
       - "8000"
@@ -42,6 +46,9 @@ services:
         - NEXT_PUBLIC_MEDIA_URL=${NEXT_PUBLIC_MEDIA_URL:-http://backend:8000/media}
     container_name: portfolio-frontend
     restart: unless-stopped
+    labels:
+      service: "portfolio-frontend"
+      description: "Next.js React Frontend for Portfolio"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
       - NEXT_PUBLIC_MEDIA_URL=${NEXT_PUBLIC_MEDIA_URL:-http://backend:8000/media}

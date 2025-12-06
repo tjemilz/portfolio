@@ -214,3 +214,69 @@ NTFY_SERVER_URL = config('NTFY_SERVER_URL', default='https://ntfy.sh')
 NTFY_TOPIC_SUCCESS = config('NTFY_TOPIC_SUCCESS', default='portfolio-login-success')
 NTFY_TOPIC_FAILED = config('NTFY_TOPIC_FAILED', default='portfolio-login-failed')
 NTFY_AUTH_TOKEN = config('NTFY_AUTH_TOKEN', default=None)  # For private topics
+
+# ===========================================
+# LOGGING CONFIGURATION (for Wazuh monitoring)
+# ===========================================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{levelname}] {asctime} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/app/logs/django.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'auth_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/app/logs/authentication.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'authentication': {
+            'handlers': ['console', 'auth_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'authentication.views': {
+            'handlers': ['console', 'auth_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}

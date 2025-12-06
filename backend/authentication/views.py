@@ -2,6 +2,7 @@
 Views for authentication app.
 """
 
+import logging
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,10 +22,46 @@ from .permissions import IsAdminUser
 
 User = get_user_model()
 
+# Logger pour les tentatives de connexion
+logger = logging.getLogger(__name__)
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     """Custom login view that returns user info with tokens."""
     serializer_class = CustomTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        """Override post to log login attempts."""
+        username = request.data.get('username', 'unknown')
+        
+        try:
+            response = super().post(request, *args, **kwargs)
+            
+            # Login réussi
+            if response.status_code == 200:
+                logger.warning(
+                    f"AUTH_SUCCESS: User '{username}' logged in successfully | "
+                    f"IP: {self.get_client_ip(request)}"
+                )
+            
+            return response
+        except Exception as e:
+            # Login échoué
+            logger.warning(
+                f"AUTH_FAILED: Login attempt failed for user '{username}' | "
+                f"Error: {str(e)} | "
+                f"IP: {self.get_client_ip(request)}"
+            )
+            raise
+    
+    def get_client_ip(self, request):
+        """Get client IP from request."""
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
 
 
 class LogoutView(APIView):
@@ -39,15 +76,35 @@ class LogoutView(APIView):
             if refresh_token:
                 token = RefreshToken(refresh_token)
                 token.blacklist()
+            
+            # Log logout
+            logger.warning(
+                f"AUTH_LOGOUT: User '{request.user.username}' logged out | "
+                f"IP: {self.get_client_ip(request)}"
+            )
+            
             return Response(
                 {'message': 'Déconnexion réussie.'},
                 status=status.HTTP_200_OK
             )
         except Exception as e:
+            logger.error(
+                f"AUTH_LOGOUT_ERROR: Logout failed for user '{request.user.username}' | "
+                f"Error: {str(e)}"
+            )
             return Response(
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+    
+    def get_client_ip(self, request):
+        """Get client IP from request."""
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
 
 
 class MeView(generics.RetrieveUpdateAPIView):
