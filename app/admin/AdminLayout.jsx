@@ -21,15 +21,6 @@ const AdminLayout = ({ children }) => {
       hasStoredUser: !!storedUser,
       storedUserData: storedUser ? JSON.parse(storedUser) : null
     });
-    
-    console.log('[AdminLayout] Auth state:', { 
-      loading, 
-      isAuthenticated, 
-      isAdmin, 
-      user: user?.username,
-      userRole: user?.role,
-      userIsSuperuser: user?.is_superuser
-    });
 
     // Si on a un token et un user dans le localStorage, on est OK
     if (token && storedUser) {
@@ -37,15 +28,12 @@ const AdminLayout = ({ children }) => {
       const userIsAdmin = userData.role === 'ADMIN' || userData.is_superuser;
       
       if (!userIsAdmin) {
-        console.log('[AdminLayout] User is not admin, redirecting to home');
         router.push('/');
       } else {
-        console.log('[AdminLayout] User is admin, access granted');
         setIsChecking(false);
       }
     } else if (!loading) {
       // Pas de token ou pas de user, et le loading est terminé
-      console.log('[AdminLayout] No auth data, redirecting to login');
       router.push('/login?redirect=/admin');
     }
   }, [loading, router]);

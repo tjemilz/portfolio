@@ -40,7 +40,6 @@ export function AuthProvider({ children }) {
     try {
       // D'abord vérifier si on a un token
       if (!authApi.isAuthenticated()) {
-        console.log('[Auth] No token found');
         setUser(null);
         setLoading(false);
         return;
@@ -55,16 +54,12 @@ export function AuthProvider({ children }) {
       // Valider avec l'API en arrière-plan (sans bloquer)
       try {
         const userData = await authApi.getMe();
-        console.log('[Auth] User validated from API:', userData.username);
-        console.log('[Auth] User data:', JSON.stringify(userData));
-        console.log('[Auth] is_superuser:', userData.is_superuser, 'role:', userData.role);
         setUser(userData);
         // Mettre à jour le localStorage
         if (typeof window !== 'undefined') {
           localStorage.setItem('user', JSON.stringify(userData));
         }
       } catch (apiError) {
-        console.error('[Auth] API validation failed:', apiError.message);
         // Garder l'utilisateur du localStorage si l'API échoue
       }
     } catch (err) {

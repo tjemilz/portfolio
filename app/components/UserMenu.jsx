@@ -11,17 +11,6 @@ export default function UserMenu() {
   const menuRef = useRef(null);
   const router = useRouter();
 
-  // Debug log
-  useEffect(() => {
-    console.log('[UserMenu] Auth state:', { 
-      isAuthenticated, 
-      isAdmin, 
-      user: user?.username,
-      role: user?.role,
-      is_superuser: user?.is_superuser
-    });
-  }, [isAuthenticated, isAdmin, user]);
-
   // Calculer isAdmin localement aussi
   const userIsAdmin = user?.role === 'ADMIN' || user?.is_superuser;
 
