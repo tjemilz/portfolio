@@ -28,6 +28,10 @@ export const metadata = {
   keywords: ["photographie", "photographe", "street photography", "noir et blanc", "portfolio", "Emilien Fourgnier", "photo urbaine", "exploration"],
   authors: [{ name: "Emilien Fourgnier" }],
   creator: "Emilien Fourgnier",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
