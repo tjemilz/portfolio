@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const DEFAULT_GROUPS = [
   { name: 'Famille', description: 'Membres de la famille' },
