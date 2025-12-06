@@ -245,36 +245,20 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/app/logs/django.log',
-            'maxBytes': 1024 * 1024 * 10,  # 10MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'auth_file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/app/logs/authentication.log',
-            'maxBytes': 1024 * 1024 * 10,  # 10MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'authentication': {
-            'handlers': ['console', 'auth_file'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
         },
         'authentication.views': {
-            'handlers': ['console', 'auth_file'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
         },

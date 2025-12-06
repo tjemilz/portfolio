@@ -25,12 +25,15 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Create media directory
-RUN mkdir -p /app/media
+# Create directories and set permissions
+RUN mkdir -p /app/media /app/logs && \
+    chown -R nobody:nogroup /app/logs
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app && \
+    chown -R appuser:appuser /app/logs
+
 USER appuser
 
 # Expose port
@@ -38,3 +41,4 @@ EXPOSE 8000
 
 # Run gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "portfolio_api.wsgi:application"]
+

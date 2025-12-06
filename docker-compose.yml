@@ -22,7 +22,6 @@ services:
     volumes:
       - ./backend/media:/app/media
       - ./backend/db.sqlite3:/app/db.sqlite3
-      - ./backend/logs:/app/logs
       - backend_static:/app/staticfiles
     expose:
       - "8000"
