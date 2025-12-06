@@ -28,7 +28,7 @@ export default function Lightbox({
       return currentImage.image_url;
     }
     if (currentImage.filename && gallerySlug) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
       return `${apiUrl}/api/galleries/${gallerySlug}/images/${currentImage.filename}/`;
     }
     return currentImage.image || currentImage.src || '';
@@ -68,7 +68,7 @@ export default function Lightbox({
         const img = new window.Image();
         const preloadUrl = images[index].image_url || 
           (images[index].filename && gallerySlug 
-            ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/galleries/${gallerySlug}/images/${images[index].filename}/`
+            ? `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`
             : images[index].image || images[index].src);
         if (preloadUrl) img.src = preloadUrl;
       }

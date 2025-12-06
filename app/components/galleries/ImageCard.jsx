@@ -31,7 +31,7 @@ export default function ImageCard({
     }
     if (image.filename && gallerySlug) {
       // Use API endpoint for secure image serving
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
       return `${apiUrl}/api/galleries/${gallerySlug}/thumbnails/${image.filename}/`;
     }
     // Fallback to direct image path
@@ -44,7 +44,7 @@ export default function ImageCard({
       return image.image_url;
     }
     if (image.filename && gallerySlug) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
       return `${apiUrl}/api/galleries/${gallerySlug}/images/${image.filename}/`;
     }
     return image.image || image.src || '';

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState({
@@ -26,14 +27,14 @@ const AdminDashboardPage = () => {
       };
 
       // Fetch galleries
-      const galleriesRes = await fetch('http://localhost:8000/api/galleries/', { headers });
+      const galleriesRes = await fetch(buildApiUrl('/api/galleries/'), { headers });
       const galleriesData = await galleriesRes.json();
       const galleries = galleriesData.results || galleriesData;
 
       // Fetch users (admin only endpoint)
       let usersCount = 0;
       try {
-        const usersRes = await fetch('http://localhost:8000/api/auth/users/', { headers });
+        const usersRes = await fetch(buildApiUrl('/api/auth/users/'), { headers });
         if (usersRes.ok) {
           const usersData = await usersRes.json();
           usersCount = usersData.results?.length || usersData.length || 0;

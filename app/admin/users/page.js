@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const UsersManagementPage = () => {
   const [users, setUsers] = useState([]);
@@ -22,7 +23,7 @@ const UsersManagementPage = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/auth/users/', {
+      const response = await fetch(buildApiUrl('/api/auth/users/'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ const UsersManagementPage = () => {
   const handleRoleChange = async (user, newRole) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/auth/users/${user.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/auth/users/${user.id}/`), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -77,7 +78,7 @@ const UsersManagementPage = () => {
   const handleDelete = async (user) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/auth/users/${user.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/auth/users/${user.id}/`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -102,7 +103,7 @@ const UsersManagementPage = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/auth/users/create/', {
+      const response = await fetch(buildApiUrl('/api/auth/users/create/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

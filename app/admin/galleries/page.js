@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AdminLayout from '../AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const GalleriesManagementPage = () => {
   const [galleries, setGalleries] = useState([]);
@@ -19,7 +20,7 @@ const GalleriesManagementPage = () => {
   const fetchGalleries = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/galleries/', {
+      const response = await fetch(buildApiUrl('/api/galleries/'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ const GalleriesManagementPage = () => {
   const handleDelete = async (gallery) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/${gallery.slug}/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/${gallery.slug}/`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -119,17 +119,19 @@ nano backend/.env
 ### Configuration `.env` (racine du projet) :
 ```env
 DJANGO_SECRET_KEY=votre-cle-secrete-generee
-BACKEND_ALLOWED_HOSTS=localhost,paulatreides.fr,api.paulatreides.fr
+BACKEND_ALLOWED_HOSTS=localhost,paulatreides.fr
 CORS_ALLOWED_ORIGINS=https://paulatreides.fr,https://www.paulatreides.fr
-NEXT_PUBLIC_API_URL=https://api.paulatreides.fr
-NEXT_PUBLIC_MEDIA_URL=https://api.paulatreides.fr/media
+# Use relative URLs for API calls (Nginx will route /api/ to backend)
+# This avoids CORS issues since the frontend domain == API domain
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_MEDIA_URL=/media
 ```
 
 ### Configuration `backend/.env` :
 ```env
 DEBUG=False
 SECRET_KEY=votre-cle-secrete-generee
-ALLOWED_HOSTS=localhost,paulatreides.fr,api.paulatreides.fr
+ALLOWED_HOSTS=localhost,paulatreides.fr
 CORS_ALLOWED_ORIGINS=https://paulatreides.fr,https://www.paulatreides.fr
 JWT_ACCESS_TOKEN_LIFETIME=60
 JWT_REFRESH_TOKEN_LIFETIME=1440

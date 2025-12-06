@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const ImagesManagementPage = () => {
   const [images, setImages] = useState([]);
@@ -27,13 +28,13 @@ const ImagesManagementPage = () => {
       };
 
       // Fetch all galleries (no pagination)
-      const galleriesRes = await fetch('http://localhost:8000/api/galleries/?page_size=all', { headers });
+      const galleriesRes = await fetch(buildApiUrl('/api/galleries/?page_size=all'), { headers });
       const galleriesData = await galleriesRes.json();
       const galleriesList = galleriesData.results || galleriesData;
       setGalleries(galleriesList);
 
       // Fetch all images (no pagination)
-      const imagesRes = await fetch('http://localhost:8000/api/galleries/images/?page_size=all', { headers });
+      const imagesRes = await fetch(buildApiUrl('/api/galleries/images/?page_size=all'), { headers });
       const imagesData = await imagesRes.json();
       setImages(imagesData.results || imagesData);
       
@@ -53,7 +54,7 @@ const ImagesManagementPage = () => {
   const handleDelete = async (image) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/images/${image.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/images/${image.id}/`), {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -74,7 +75,7 @@ const ImagesManagementPage = () => {
 
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/galleries/images/bulk_delete/', {
+      const response = await fetch(buildApiUrl('/api/galleries/images/bulk_delete/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -97,7 +98,7 @@ const ImagesManagementPage = () => {
   const handleUpdateGalleries = async (imageId, galleryIds) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/images/${imageId}/update_galleries/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/images/${imageId}/update_galleries/`), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -129,7 +130,7 @@ const ImagesManagementPage = () => {
       else if (action === 'add') body.add_galleries = galleryIds;
       else if (action === 'remove') body.remove_galleries = galleryIds;
       
-      const response = await fetch('http://localhost:8000/api/galleries/images/bulk_update_galleries/', {
+      const response = await fetch(buildApiUrl('/api/galleries/images/bulk_update_galleries/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -578,7 +579,7 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
         formData.append('image', files[i]);
         formData.append('title', files[i].name.replace(/\.[^/.]+$/, ''));
 
-        const res = await fetch('http://localhost:8000/api/galleries/images/', {
+        const res = await fetch(buildApiUrl('/api/galleries/images/'), {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData,
@@ -589,7 +590,7 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
 
         // Add to galleries only if not "no gallery"
         if (!noGallery && selectedGalleryIds.length > 0) {
-          await fetch(`http://localhost:8000/api/galleries/images/${data.id}/update_galleries/`, {
+          await fetch(buildApiUrl(`/api/galleries/images/${data.id}/update_galleries/`), {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ gallery_ids: selectedGalleryIds }),

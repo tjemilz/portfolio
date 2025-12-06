@@ -134,7 +134,7 @@ export default function ImageUploader({
       // Update all files to uploading status
       setFiles(prev => prev.map(f => ({ ...f, status: 'uploading' })));
       
-      const response = await fetch(`http://localhost:8000/api/galleries/${gallerySlug}/upload/`, {
+      const response = await fetch(`/api/galleries/${gallerySlug}/upload/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
