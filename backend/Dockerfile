@@ -26,13 +26,17 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Create directories and set permissions
-RUN mkdir -p /app/media /app/logs && \
+RUN mkdir -p /app/media/galleries/{covers,images,private,public/{bestof,bw,explore,streets}} \
+    /app/media/thumbnails \
+    /app/logs && \
+    chmod -R 777 /app/media && \
     chown -R nobody:nogroup /app/logs
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app && \
-    chown -R appuser:appuser /app/logs
+    chown -R appuser:appuser /app/logs && \
+    chmod -R 755 /app
 
 USER appuser
 
