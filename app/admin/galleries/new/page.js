@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../AdminLayout';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const GALLERY_TYPES = [
   { value: 'BESTOF', label: 'Best Of' },
@@ -52,7 +53,7 @@ const NewGalleryPage = () => {
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem('access_token');
-        const response = await fetch('http://localhost:8000/api/galleries/groups/', {
+        const response = await fetch(buildApiUrl('/api/galleries/groups/'), {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (response.ok) {
@@ -140,7 +141,7 @@ const NewGalleryPage = () => {
         data.append('cover_image', coverImage);
       }
 
-      const response = await fetch('http://localhost:8000/api/galleries/', {
+      const response = await fetch(buildApiUrl('/api/galleries/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -471,3 +472,4 @@ const NewGalleryPage = () => {
 };
 
 export default NewGalleryPage;
+

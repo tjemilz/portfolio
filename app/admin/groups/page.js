@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../AdminLayout';
 import { buildApiUrl } from '@/app/lib/apiUtils';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const DEFAULT_GROUPS = [
   { name: 'Famille', description: 'Membres de la famille' },
@@ -43,8 +44,8 @@ const GroupsManagementPage = () => {
       };
 
       const [groupsRes, usersRes] = await Promise.all([
-        fetch('http://localhost:8000/api/galleries/groups/', { headers }),
-        fetch('http://localhost:8000/api/auth/users/', { headers }),
+        fetch(buildApiUrl('/api/galleries/groups/'), { headers }),
+        fetch(buildApiUrl('/api/auth/users/'), { headers }),
       ]);
 
       if (groupsRes.ok) {
@@ -73,7 +74,7 @@ const GroupsManagementPage = () => {
       for (const group of DEFAULT_GROUPS) {
         const exists = groups.some(g => g.name.toLowerCase() === group.name.toLowerCase());
         if (!exists) {
-          await fetch('http://localhost:8000/api/galleries/groups/', {
+          await fetch(buildApiUrl('/api/galleries/groups/'), {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -99,7 +100,7 @@ const GroupsManagementPage = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/galleries/groups/', {
+      const response = await fetch(buildApiUrl('/api/galleries/groups/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -130,7 +131,7 @@ const GroupsManagementPage = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/groups/${selectedGroup.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -161,7 +162,7 @@ const GroupsManagementPage = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/groups/${selectedGroup.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -189,7 +190,7 @@ const GroupsManagementPage = () => {
     
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/galleries/groups/${selectedGroup.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -614,3 +615,4 @@ const GroupsManagementPage = () => {
 };
 
 export default GroupsManagementPage;
+

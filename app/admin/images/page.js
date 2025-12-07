@@ -742,3 +742,4 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
 };
 
 export default ImagesManagementPage;
+

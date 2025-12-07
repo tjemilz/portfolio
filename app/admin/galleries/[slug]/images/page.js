@@ -31,8 +31,8 @@ const GalleryImagesPage = () => {
 
       // Fetch gallery and all images in parallel
       const [galleryRes, imagesRes] = await Promise.all([
-        fetch(`http://localhost:8000/api/galleries/${slug}/`, { headers }),
-        fetch('http://localhost:8000/api/images/?page_size=all', { headers })
+        fetch(`/api/galleries/${slug}/`, { headers }),
+        fetch('/api/images/?page_size=all', { headers })
       ]);
 
       if (!galleryRes.ok) {
@@ -100,7 +100,7 @@ const GalleryImagesPage = () => {
         if (image) {
           const currentGalleryIds = (image.galleries || []).map(g => g.id);
           updatePromises.push(
-            fetch(`http://localhost:8000/api/images/${imageId}/`, {
+            fetch(`/api/images/${imageId}/`, {
               method: 'PATCH',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ const GalleryImagesPage = () => {
         if (image) {
           const currentGalleryIds = (image.galleries || []).map(g => g.id);
           updatePromises.push(
-            fetch(`http://localhost:8000/api/images/${imageId}/`, {
+            fetch(`/api/images/${imageId}/`, {
               method: 'PATCH',
               headers: {
                 'Authorization': `Bearer ${token}`,

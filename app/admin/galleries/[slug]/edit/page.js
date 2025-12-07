@@ -59,7 +59,7 @@ const EditGalleryPage = () => {
         const token = localStorage.getItem('access_token');
         
         // Fetch gallery
-        const galleryRes = await fetch(`http://localhost:8000/api/galleries/${slug}/`, {
+        const galleryRes = await fetch(`/api/galleries/${slug}/`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         
@@ -88,7 +88,7 @@ const EditGalleryPage = () => {
         }
         
         // Fetch user groups
-        const groupsRes = await fetch('http://localhost:8000/api/galleries/groups/', {
+        const groupsRes = await fetch('/api/galleries/groups/', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (groupsRes.ok) {
@@ -174,7 +174,7 @@ const EditGalleryPage = () => {
         data.append('cover_image', coverImage);
       }
 
-      const response = await fetch(`http://localhost:8000/api/galleries/${slug}/`, {
+      const response = await fetch(`/api/galleries/${slug}/`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

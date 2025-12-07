@@ -287,3 +287,4 @@ const GalleriesManagementPage = () => {
 };
 
 export default GalleriesManagementPage;
+
