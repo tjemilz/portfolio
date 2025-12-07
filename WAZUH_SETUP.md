@@ -115,12 +115,7 @@ sudo systemctl restart wazuh-agent
 ### Sur Wazuh Manager, créez `/var/ossec/etc/rules/portfolio.xml`:
 
 ```bash
-sudo nano /var/ossec/etc/rules/portfolio.xml
-```
-
-Collez ceci:
-
-```xml
+sudo cat > /var/ossec/etc/rules/portfolio.xml << 'EOF'
 <!-- Portfolio Security Rules -->
 <group name="portfolio,web,">
   
@@ -129,7 +124,6 @@ Collez ceci:
     <if_sid>30315</if_sid>
     <status>401</status>
     <description>Portfolio: Failed Authentication Attempt (401 Unauthorized)</description>
-    <group>authentication_failed,</group>
   </rule>
 
   <!-- Rule for HTTP 403 (Forbidden) -->
@@ -137,7 +131,6 @@ Collez ceci:
     <if_sid>30315</if_sid>
     <status>403</status>
     <description>Portfolio: Access Denied (403 Forbidden)</description>
-    <group>access_denied,</group>
   </rule>
 
   <!-- Rule for HTTP 500 (Internal Server Error) -->
@@ -145,7 +138,6 @@ Collez ceci:
     <if_sid>30315</if_sid>
     <status>500</status>
     <description>Portfolio: Internal Server Error (500)</description>
-    <group>errors,</group>
   </rule>
 
   <!-- Rule for HTTP 404 (Not Found) -->
@@ -153,37 +145,19 @@ Collez ceci:
     <if_sid>30315</if_sid>
     <status>404</status>
     <description>Portfolio: Page Not Found (404)</description>
-    <group>web_attack,</group>
   </rule>
 
   <!-- Brute Force Detection: Multiple 401 from same IP -->
   <rule id="100105" level="7">
     <if_matched_sid>100101</if_matched_sid>
-    <same_src_ip />
+    <same_source_ip />
     <frequency>5</frequency>
     <timeframe>600</timeframe>
-    <description>Portfolio: Brute Force Attack - Multiple Failed Authentications from $srcip</description>
-    <group>brute_force,authentication_brute_force,</group>
-  </rule>
-
-  <!-- SQL Injection Detection -->
-  <rule id="100106" level="8">
-    <if_sid>30315</if_sid>
-    <match>union|select|drop|insert|update|delete|script|alert</match>
-    <description>Portfolio: Possible SQL Injection or XSS Attack Detected</description>
-    <group>sql_injection,web_attack,</group>
-  </rule>
-
-  <!-- Successful Authentication (Low Level - Informational) -->
-  <rule id="100107" level="2">
-    <if_sid>30315</if_sid>
-    <status>200</status>
-    <match>/api/auth/login</match>
-    <description>Portfolio: Successful Authentication</description>
-    <group>authentication_success,</group>
+    <description>Portfolio: Brute Force Attack - Multiple Failed Authentications</description>
   </rule>
 
 </group>
+EOF
 ```
 
 ### Redémarrez Wazuh Manager:
@@ -191,8 +165,11 @@ Collez ceci:
 ```bash
 sudo systemctl restart wazuh-manager
 
-# Vérifiez la syntaxe des règles
-sudo /var/ossec/bin/wazuh-control verify-conf
+# Vérifiez le statut
+sudo systemctl status wazuh-manager
+
+# Vérifiez que le manager a démarré sans erreur
+journalctl -xeu wazuh-manager.service | tail -5
 ```
 
 ---
