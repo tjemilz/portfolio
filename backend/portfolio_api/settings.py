@@ -230,6 +230,10 @@ LOGGING = {
             'format': '[{levelname}] {asctime} {name}: {message}',
             'style': '{',
         },
+        'wazuh': {
+            'format': 'portfolio[%(process)d]: %(levelname)s %(name)s - %(message)s',
+            'style': '%',
+        },
     },
     'filters': {
         'require_debug_false': {
@@ -245,21 +249,33 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        'syslog': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': '/dev/log',  # Pour Docker, utiliser 'localhost:514' si besoin
+            'formatter': 'wazuh',
+            'facility': 'LOG_LOCAL0',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'syslog'],
             'level': 'INFO',
             'propagate': True,
         },
         'authentication': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+            'handlers': ['console', 'syslog'],
+            'level': 'INFO',  # Changé de WARNING à INFO pour capturer les connexions
             'propagate': False,
         },
         'authentication.views': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+            'handlers': ['console', 'syslog'],
+            'level': 'INFO',  # Changé de WARNING à INFO
+            'propagate': False,
+        },
+        'galleries': {
+            'handlers': ['console', 'syslog'],
+            'level': 'INFO',
             'propagate': False,
         },
     },
