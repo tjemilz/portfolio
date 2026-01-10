@@ -15,7 +15,7 @@ function GalleryCard({ gallery, index }) {
     >
       <div className="relative overflow-hidden rounded-sm">
         {/* Image de couverture */}
-        <div className={`relative ${index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-[3/4]'} bg-gray-100 overflow-hidden`}>
+        <div className={`relative ${index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-[3/4]'} bg-slate-grey/10 overflow-hidden`}>
           {gallery.cover_url ? (
             <Image
               src={gallery.cover_url}
@@ -45,7 +45,7 @@ function GalleryCard({ gallery, index }) {
           {/* Overlay au hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex items-center justify-center">
             <div className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-              <span className="bg-white text-gray-900 px-6 py-2.5 rounded-full text-sm font-medium">
+              <span className="bg-white text-space-indigo px-6 py-2.5 rounded-full text-sm font-medium">
                 Découvrir
               </span>
             </div>
@@ -54,15 +54,15 @@ function GalleryCard({ gallery, index }) {
 
         {/* Infos de la galerie */}
         <div className="pt-5 pb-2">
-          <h3 className="font-serif text-xl text-gray-900 group-hover:text-accent transition-colors duration-300">
+          <h3 className="font-serif text-xl text-space-indigo group-hover:text-accent transition-colors duration-300">
             {gallery.name}
           </h3>
           {gallery.description && (
-            <p className="mt-1.5 text-gray-500 text-sm line-clamp-2 font-light">
+            <p className="mt-1.5 text-slate-grey text-sm line-clamp-2 font-light">
               {gallery.description}
             </p>
           )}
-          <div className="mt-3 flex items-center gap-4 text-xs text-gray-400">
+          <div className="mt-3 flex items-center gap-4 text-xs text-slate-grey">
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -120,7 +120,7 @@ export default function GalleriesPage() {
   const privateCount = galleries.filter(g => g.visibility === 'PRIVATE').length;
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6">
         <div className="max-w-7xl mx-auto">
@@ -128,10 +128,10 @@ export default function GalleriesPage() {
             <span className="text-accent text-sm tracking-[0.3em] uppercase font-medium">
               Collections
             </span>
-            <h1 className="mt-4 font-serif text-5xl md:text-7xl lg:text-8xl text-gray-900">
+            <h1 className="mt-4 font-serif text-5xl md:text-7xl lg:text-8xl text-space-indigo">
               Galeries
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="mt-6 text-lg md:text-xl text-slate-grey max-w-2xl mx-auto font-light leading-relaxed">
               {isAuthenticated 
                 ? `Bienvenue ${user?.first_name || user?.username || 'visiteur'}. Explorez vos galeries exclusives.`
                 : `Découvrez mes collections photographiques à travers différentes séries thématiques.`
@@ -146,8 +146,8 @@ export default function GalleriesPage() {
                 onClick={() => setFilter('all')}
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   filter === 'all'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-space-indigo text-white'
+                    : 'bg-white text-slate-grey hover:bg-slate-grey/10 border border-slate-grey/20'
                 }`}
               >
                 Toutes ({galleries.length})
@@ -156,8 +156,8 @@ export default function GalleriesPage() {
                 onClick={() => setFilter('public')}
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   filter === 'public'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-space-indigo text-white'
+                    : 'bg-white text-slate-grey hover:bg-slate-grey/10 border border-slate-grey/20'
                 }`}
               >
                 Publiques ({publicCount})
@@ -167,7 +167,7 @@ export default function GalleriesPage() {
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   filter === 'private'
                     ? 'bg-accent text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    : 'bg-white text-slate-grey hover:bg-slate-grey/10 border border-slate-grey/20'
                 }`}
               >
                 Privées ({privateCount})
@@ -179,7 +179,7 @@ export default function GalleriesPage() {
 
       {/* Ligne décorative */}
       <div className="max-w-7xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-grey/30 to-transparent"></div>
       </div>
 
       {/* Grille de galeries */}
@@ -205,11 +205,11 @@ export default function GalleriesPage() {
                 <svg className="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <p className="text-gray-900 font-medium">Une erreur est survenue</p>
-                <p className="text-gray-500 text-sm mt-1">{error}</p>
+                <p className="text-space-indigo font-medium">Une erreur est survenue</p>
+                <p className="text-slate-grey text-sm mt-1">{error}</p>
                 <button 
                   onClick={fetchGalleries}
-                  className="mt-6 px-6 py-2.5 bg-gray-900 text-white rounded-full text-sm hover:bg-gray-800 transition-colors"
+                  className="mt-6 px-6 py-2.5 bg-space-indigo text-white rounded-full text-sm hover:bg-shadow-grey transition-colors"
                 >
                   Réessayer
                 </button>
@@ -229,15 +229,15 @@ export default function GalleriesPage() {
           {/* Aucune galerie */}
           {!loading && !error && filteredGalleries.length === 0 && (
             <div className="text-center py-24">
-              <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-slate-grey/10 flex items-center justify-center">
                 <svg className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <h3 className="font-serif text-2xl text-gray-900 mb-3">
+              <h3 className="font-serif text-2xl text-space-indigo mb-3">
                 Aucune galerie disponible
               </h3>
-              <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              <p className="text-slate-grey mb-8 max-w-md mx-auto">
                 {filter !== 'all' 
                   ? 'Aucune galerie ne correspond à ce filtre.'
                   : 'Il n\'y a pas encore de galeries à afficher.'
@@ -246,7 +246,7 @@ export default function GalleriesPage() {
               {filter !== 'all' && (
                 <button
                   onClick={() => setFilter('all')}
-                  className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm hover:bg-gray-800 transition-colors"
+                  className="px-8 py-3 bg-space-indigo text-white rounded-full text-sm hover:bg-shadow-grey transition-colors"
                 >
                   Voir toutes les galeries
                 </button>
@@ -258,18 +258,18 @@ export default function GalleriesPage() {
 
       {/* CTA pour connexion si non authentifié */}
       {!loading && !isAuthenticated && (
-        <section className="py-24 px-6 bg-gray-900 text-white">
+        <section className="py-24 px-6 bg-space-indigo text-white">
           <div className="max-w-4xl mx-auto text-center">
             <span className="text-accent text-sm tracking-[0.3em] uppercase">Accès exclusif</span>
-            <h2 className="mt-4 font-serif text-3xl md:text-4xl">
+            <h2 className="mt-4 font-serif text-3xl md:text-4xl text-white">
               Découvrez les galeries privées
             </h2>
-            <p className="mt-4 text-gray-400 max-w-xl mx-auto">
+            <p className="mt-4 text-slate-grey max-w-xl mx-auto">
               Connectez-vous pour accéder aux collections exclusives réservées à certains membres.
             </p>
             <Link
               href="/login?redirect=/galleries"
-              className="inline-flex items-center gap-2 mt-8 px-8 py-3 bg-accent text-white rounded-full hover:bg-accent-dark transition-colors"
+              className="inline-flex items-center gap-2 mt-8 px-8 py-3 bg-accent text-white rounded-full hover:bg-accent-hover transition-colors"
             >
               Se connecter
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

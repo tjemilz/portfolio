@@ -258,8 +258,8 @@ const GroupsManagementPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des groupes</h1>
-          <p className="text-gray-600 mt-1">{groups.length} groupes au total</p>
+          <h1 className="text-2xl font-bold text-space-indigo">Gestion des groupes</h1>
+          <p className="text-slate-grey mt-1">{groups.length} groupes au total</p>
         </div>
         <div className="flex gap-3">
           {groups.length === 0 && (
@@ -287,7 +287,7 @@ const GroupsManagementPage = () => {
       {loading && (
         <div className="bg-white rounded-xl shadow p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Chargement...</p>
+          <p className="text-slate-grey mt-4">Chargement...</p>
         </div>
       )}
 
@@ -306,7 +306,7 @@ const GroupsManagementPage = () => {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <p className="text-gray-500 mb-4">Aucun groupe créé</p>
+              <p className="text-slate-grey mb-4">Aucun groupe créé</p>
               <button
                 onClick={handleCreateDefaultGroups}
                 disabled={saving}
@@ -321,8 +321,8 @@ const GroupsManagementPage = () => {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{group.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <h3 className="text-lg font-semibold text-space-indigo">{group.name}</h3>
+                      <p className="text-sm text-slate-grey mt-1">
                         {group.description || 'Aucune description'}
                       </p>
                     </div>
@@ -333,30 +333,30 @@ const GroupsManagementPage = () => {
 
                   {/* Members preview */}
                   <div className="mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Membres :</p>
+                    <p className="text-sm font-medium text-shadow-grey mb-2">Membres :</p>
                     {group.members && group.members.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {group.members.slice(0, 5).map((member) => (
                           <span
                             key={member.id}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-700"
+                            className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-slate-grey/10 text-shadow-grey"
                           >
                             {member.first_name || member.username}
                           </span>
                         ))}
                         {group.members.length > 5 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-500">
+                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-slate-grey/10 text-slate-grey">
                             +{group.members.length - 5} autres
                           </span>
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400 italic">Aucun membre</p>
+                      <p className="text-sm text-slate-grey italic">Aucun membre</p>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2 pt-4 border-t border-gray-100">
+                  <div className="flex gap-2 pt-4 border-t border-slate-grey/10">
                     <button
                       onClick={() => openMembersModal(group)}
                       className="flex-1 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
@@ -365,7 +365,7 @@ const GroupsManagementPage = () => {
                     </button>
                     <button
                       onClick={() => openEditModal(group)}
-                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-slate-grey hover:bg-slate-grey/10 rounded-lg transition-colors"
                       title="Modifier"
                     >
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -393,13 +393,13 @@ const GroupsManagementPage = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Nouveau groupe</h3>
+            <div className="p-6 border-b border-slate-grey/20">
+              <h3 className="text-lg font-semibold text-space-indigo">Nouveau groupe</h3>
             </div>
             <form onSubmit={handleCreate}>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Nom du groupe *
                   </label>
                   <input
@@ -412,7 +412,7 @@ const GroupsManagementPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Description
                   </label>
                   <textarea
@@ -424,11 +424,11 @@ const GroupsManagementPage = () => {
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <div className="p-6 border-t border-slate-grey/20 flex gap-3 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -449,13 +449,13 @@ const GroupsManagementPage = () => {
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Modifier le groupe</h3>
+            <div className="p-6 border-b border-slate-grey/20">
+              <h3 className="text-lg font-semibold text-space-indigo">Modifier le groupe</h3>
             </div>
             <form onSubmit={handleEdit}>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Nom du groupe *
                   </label>
                   <input
@@ -467,7 +467,7 @@ const GroupsManagementPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Description
                   </label>
                   <textarea
@@ -478,11 +478,11 @@ const GroupsManagementPage = () => {
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <div className="p-6 border-t border-slate-grey/20 flex gap-3 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -503,18 +503,18 @@ const GroupsManagementPage = () => {
       {showMembersModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="p-6 border-b border-slate-grey/20">
+              <h3 className="text-lg font-semibold text-space-indigo">
                 Membres de "{selectedGroup?.name}"
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-slate-grey mt-1">
                 Sélectionnez les utilisateurs à ajouter au groupe
               </p>
             </div>
             <form onSubmit={handleUpdateMembers} className="flex flex-col flex-1 overflow-hidden">
               <div className="p-6 overflow-y-auto flex-1">
                 {users.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">Aucun utilisateur disponible</p>
+                  <p className="text-slate-grey text-center py-4">Aucun utilisateur disponible</p>
                 ) : (
                   <div className="space-y-2">
                     {users.map((user) => (
@@ -523,7 +523,7 @@ const GroupsManagementPage = () => {
                         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                           formData.member_ids.includes(user.id)
                             ? 'bg-blue-50 border border-blue-200'
-                            : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
+                            : 'bg-slate-grey/5 hover:bg-slate-grey/10 border border-transparent'
                         }`}
                       >
                         <input
@@ -533,18 +533,18 @@ const GroupsManagementPage = () => {
                           className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-space-indigo">
                             {user.first_name && user.last_name
                               ? `${user.first_name} ${user.last_name}`
                               : user.username}
                           </p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-sm text-slate-grey">{user.email}</p>
                         </div>
                         {user.role && (
                           <span className={`text-xs px-2 py-1 rounded ${
                             user.role === 'admin' ? 'bg-red-100 text-red-700' :
                             user.role === 'editor' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-gray-100 text-gray-600'
+                            'bg-slate-grey/10 text-slate-grey'
                           }`}>
                             {user.role}
                           </span>
@@ -554,15 +554,15 @@ const GroupsManagementPage = () => {
                   </div>
                 )}
               </div>
-              <div className="p-6 border-t border-gray-200 flex gap-3 justify-between">
-                <span className="text-sm text-gray-500">
+              <div className="p-6 border-t border-slate-grey/20 flex gap-3 justify-between">
+                <span className="text-sm text-slate-grey">
                   {formData.member_ids.length} membre{formData.member_ids.length !== 1 ? 's' : ''} sélectionné{formData.member_ids.length !== 1 ? 's' : ''}
                 </span>
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => setShowMembersModal(false)}
-                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     Annuler
                   </button>
@@ -584,17 +584,17 @@ const GroupsManagementPage = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-space-indigo mb-2">
               Confirmer la suppression
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-slate-grey mb-6">
               Êtes-vous sûr de vouloir supprimer le groupe "{selectedGroup?.name}" ?
               Les membres ne seront pas supprimés, mais ils perdront l'accès aux galeries privées associées à ce groupe.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Annuler
               </button>

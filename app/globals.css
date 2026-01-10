@@ -4,32 +4,35 @@
 @tailwind utilities;
 
 :root {
-  --background: #FAF9F6;
-  --foreground: #1a1a1a;
-  --cream: #FAF9F6;
-  --accent: #8B7355;
-  --accent-dark: #6B5344;
+  /* Still24 Brand Colors */
+  --background: #fcfcfc;
+  --foreground: #272932;
+  --space-indigo: #25283d;
+  --shadow-grey: #272932;
+  --slate-grey: #6d8a96;
+  --ruby-red: #a4031f;
+  
+  /* Semantic aliases */
+  --accent: var(--ruby-red);
+  --accent-hover: #8a0219;
+  --text-primary: var(--shadow-grey);
+  --text-secondary: var(--slate-grey);
+  --text-muted: #9ca3af;
+  
   color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-cream: var(--cream);
+  --color-space-indigo: var(--space-indigo);
+  --color-shadow-grey: var(--shadow-grey);
+  --color-slate-grey: var(--slate-grey);
+  --color-ruby-red: var(--ruby-red);
   --color-accent: var(--accent);
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-serif: var(--font-tinos);
 }
-
-/* Force light mode - comment this section to enable dark mode */
-/*
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-*/
 
 body {
   background: var(--background);
@@ -37,24 +40,33 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-/* Headings use serif font */
+/* Headings use serif font (Tinos) */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-tinos), Georgia, serif;
+  color: var(--space-indigo);
 }
 
 /* Form elements - always dark text on light background */
 input, select, textarea {
-  color: #171717 !important;
+  color: var(--shadow-grey) !important;
   background-color: #ffffff !important;
+  border-color: var(--slate-grey);
 }
 
 input::placeholder {
-  color: #9ca3af !important;
+  color: var(--slate-grey) !important;
+}
+
+/* Focus states with brand color */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ruby-red) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(164, 3, 31, 0.1);
 }
 
 /* Ensure options in select have proper colors */
 option {
-  color: #171717 !important;
+  color: var(--shadow-grey) !important;
   background-color: #ffffff !important;
 }
 
@@ -64,16 +76,16 @@ option {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--cream);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent);
+  background: var(--slate-grey);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-dark);
+  background: var(--space-indigo);
 }
 
 /* Grain texture overlay */
@@ -85,7 +97,7 @@ option {
   height: 100%;
   pointer-events: none;
   z-index: 1000;
-  opacity: 0.03;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
@@ -218,10 +230,10 @@ option {
 .gradient-bg {
   background: linear-gradient(
     -45deg,
-    var(--cream),
-    #f5f0e8,
-    #ebe5db,
-    var(--cream)
+    var(--background),
+    #f8f8f8,
+    #f5f5f5,
+    var(--background)
   );
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
@@ -260,19 +272,68 @@ option {
   }
 }
 
-/* Accent color utilities */
+/* Brand color utilities */
 .text-accent {
-  color: var(--accent);
+  color: var(--ruby-red);
+}
+
+.text-space-indigo {
+  color: var(--space-indigo);
+}
+
+.text-slate-grey {
+  color: var(--slate-grey);
 }
 
 .bg-accent {
-  background-color: var(--accent);
+  background-color: var(--ruby-red);
+}
+
+.bg-space-indigo {
+  background-color: var(--space-indigo);
 }
 
 .border-accent {
-  border-color: var(--accent);
+  border-color: var(--ruby-red);
 }
 
+.bg-background {
+  background-color: var(--background);
+}
+
+/* Legacy support - alias cream to background */
 .bg-cream {
-  background-color: var(--cream);
+  background-color: var(--background);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--ruby-red);
+  color: white;
+}
+
+/* Link styling */
+a {
+  transition: color 0.2s ease;
+}
+
+/* Button base styles */
+.btn-primary {
+  background-color: var(--space-indigo);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--shadow-grey);
+}
+
+.btn-accent {
+  background-color: var(--ruby-red);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-hover);
 }

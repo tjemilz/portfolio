@@ -131,7 +131,7 @@ export default function Home() {
         <PointCloudCamera />
         
         <div className="flex-grow flex flex-col items-center justify-center my-auto relative z-10">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-center mb-12 font-serif flex flex-col items-center">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-center mb-12 font-serif flex flex-col items-center text-space-indigo">
             <span className={`mb-3 transition-all duration-1000 ease-out ${showCreate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               Create.
             </span>
@@ -143,14 +143,14 @@ export default function Home() {
             </span>
           </h1>
           
-          <p className={`text-lg md:text-xl text-gray-600 max-w-2xl text-center mb-8 font-light leading-relaxed transition-all duration-1000 delay-500 ease-out ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <p className={`text-lg md:text-xl text-slate-grey max-w-2xl text-center mb-8 font-light leading-relaxed transition-all duration-1000 delay-500 ease-out ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             Bienvenue dans mon univers photographique. Un monde où chaque cliché raconte une histoire, 
             chaque regard figé témoigne d'une émotion, et chaque paysage révèle une nouvelle perspective.
           </p>
 
           <Link 
             href="/galleries"
-            className={`group inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-gray-900 text-gray-900 font-medium rounded-full hover:bg-gray-900 hover:text-white transition-all duration-300 ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`group inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:text-white transition-all duration-300 ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
             style={{ transitionDelay: '600ms' }}
           >
             Explorer les galeries
@@ -161,9 +161,9 @@ export default function Home() {
         </div>
         
         <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-1000 ${showCapture ? 'opacity-60' : 'opacity-0'}`}>
-          <span className="text-sm text-gray-500 mb-3 font-light tracking-wider uppercase">Défiler</span>
-          <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-            <div className="w-1.5 h-3 bg-gray-400 rounded-full mt-2 animate-bounce" />
+          <span className="text-sm text-slate-grey mb-3 font-light tracking-wider uppercase">Défiler</span>
+          <div className="w-6 h-10 border-2 border-slate-grey rounded-full flex justify-center">
+            <div className="w-1.5 h-3 bg-slate-grey rounded-full mt-2 animate-bounce" />
           </div>
         </div>
       </section>
@@ -173,8 +173,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <RevealSection>
             <div className="text-center mb-16">
-              <span className="text-accent uppercase tracking-[0.3em] text-sm font-medium">Portfolio</span>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6">Sélection de photos</h2>
+              <span className="text-accent uppercase tracking-[0.3em] text-sm font-medium">Collections</span>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6 text-space-indigo">Sélection de photos</h2>
               <div className="w-24 h-0.5 bg-accent mx-auto" />
             </div>
           </RevealSection>
@@ -226,12 +226,12 @@ export default function Home() {
       </section>
 
       {/* Galleries Preview Section */}
-      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-cream">
+      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-background">
         <div className="max-w-7xl mx-auto">
           <RevealSection>
             <div className="text-center mb-16">
               <span className="text-accent uppercase tracking-[0.3em] text-sm font-medium">Collections</span>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6">Mes galeries</h2>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mt-4 mb-6 text-space-indigo">Mes galeries</h2>
               <div className="w-24 h-0.5 bg-accent mx-auto" />
             </div>
           </RevealSection>
@@ -251,7 +251,7 @@ export default function Home() {
                           <Image src={gallery.cover_url} alt={gallery.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <svg className="w-16 h-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-16 h-16 text-slate-grey" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>
@@ -262,8 +262,8 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="p-5">
-                        <h3 className="text-xl font-serif font-semibold group-hover:text-accent transition-colors">{gallery.name}</h3>
-                        {gallery.description && <p className="text-gray-500 text-sm mt-2 line-clamp-2">{gallery.description}</p>}
+                        <h3 className="text-xl font-serif font-semibold text-space-indigo group-hover:text-accent transition-colors">{gallery.name}</h3>
+                        {gallery.description && <p className="text-slate-grey text-sm mt-2 line-clamp-2">{gallery.description}</p>}
                       </div>
                     </div>
                   </Link>
@@ -286,7 +286,7 @@ export default function Home() {
       </section>
 
       {/* Quote Section */}
-      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-gray-900 text-white relative overflow-hidden">
+      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-space-indigo text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
         </div>
@@ -301,7 +301,7 @@ export default function Home() {
             </blockquote>
             <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-0.5 bg-accent" />
-              <p className="text-gray-400 font-light">Une vision personnelle</p>
+              <p className="text-slate-grey font-light">Une vision personnelle</p>
               <div className="w-12 h-0.5 bg-accent" />
             </div>
           </div>
@@ -309,18 +309,18 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-cream">
+      <section className="w-full py-24 md:py-32 px-6 md:px-10 bg-background">
         <RevealSection>
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Envie d'en découvrir plus ?</h2>
-            <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-space-indigo">Envie d'en découvrir plus ?</h2>
+            <p className="text-slate-grey text-lg mb-10 max-w-2xl mx-auto">
               Parcourez mes différentes galeries et plongez dans mon univers photographique. Chaque collection raconte une histoire unique.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/galleries" className="px-8 py-4 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-800 transition-colors">
+              <Link href="/galleries" className="px-8 py-4 bg-space-indigo text-white font-medium rounded-full hover:bg-shadow-grey transition-colors">
                 Parcourir les galeries
               </Link>
-              <Link href="/bio" className="px-8 py-4 border-2 border-gray-900 text-gray-900 font-medium rounded-full hover:bg-gray-900 hover:text-white transition-colors">
+              <Link href="/bio" className="px-8 py-4 border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:text-white transition-colors">
                 En savoir plus sur moi
               </Link>
             </div>

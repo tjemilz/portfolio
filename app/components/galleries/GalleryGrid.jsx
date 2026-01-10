@@ -108,7 +108,7 @@ export default function GalleryGrid({
   if (!images || images.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-slate-grey dark:text-slate-grey/80">
           Aucune image dans cette galerie
         </p>
       </div>
@@ -119,7 +119,7 @@ export default function GalleryGrid({
     <>
       {/* Selection toolbar */}
       {allowMultiSelect && (
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-grey/20">
           <div className="flex items-center gap-4">
             <button
               onClick={toggleSelectionMode}
@@ -127,7 +127,7 @@ export default function GalleryGrid({
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
                 ${isSelectionMode 
                   ? 'bg-accent text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-slate-grey/10 text-slate-grey hover:bg-gray-200'
                 }
               `}
             >
@@ -142,11 +142,11 @@ export default function GalleryGrid({
               <>
                 <button
                   onClick={toggleSelectAll}
-                  className="text-sm text-accent hover:text-accent-dark transition-colors"
+                  className="text-sm text-accent hover:text-accent-hover transition-colors"
                 >
                   {selectedImages.size === images.length ? 'Tout désélectionner' : 'Tout sélectionner'}
                 </button>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-slate-grey">
                   {selectedImages.size} image{selectedImages.size > 1 ? 's' : ''} sélectionnée{selectedImages.size > 1 ? 's' : ''}
                 </span>
               </>
@@ -160,8 +160,8 @@ export default function GalleryGrid({
               className={`
                 flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all
                 ${isDownloading 
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                  : 'bg-accent text-white hover:bg-accent-dark'
+                  ? 'bg-gray-300 text-slate-grey cursor-not-allowed' 
+                  : 'bg-accent text-white hover:bg-accent-hover'
                 }
               `}
             >

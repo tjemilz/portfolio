@@ -13,7 +13,7 @@ export default function GalleryGridSkeleton({
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={index}
-          className="relative aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden"
+          className="relative aspect-[3/4] bg-slate-grey/10 rounded-sm overflow-hidden"
         >
           {/* Animated shimmer effect */}
           <div className="absolute inset-0 animate-pulse">

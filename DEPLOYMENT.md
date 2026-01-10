@@ -5,7 +5,7 @@
 - Proxmox VE installé et configuré
 - Accès SSH à votre serveur Proxmox
 - Cloudflare Tunnel configuré (pour exposer le site sans ouvrir de ports)
-- Domaine : `paulatreides.fr`
+- Domaine : `still24.fr`
 
 ---
 
@@ -14,7 +14,7 @@
 ```
 Internet → Cloudflare → Tunnel → Container LXC → Docker (nginx/frontend/backend)
                                       ↓
-                              ntfy.paulatreides.fr (notifications)
+                              ntfy.still24.fr (notifications)
 ```
 
 **Avantages du Cloudflare Tunnel :**
@@ -119,8 +119,8 @@ nano backend/.env
 ### Configuration `.env` (racine du projet) :
 ```env
 DJANGO_SECRET_KEY=votre-cle-secrete-generee
-BACKEND_ALLOWED_HOSTS=localhost,paulatreides.fr
-CORS_ALLOWED_ORIGINS=https://paulatreides.fr,https://www.paulatreides.fr
+BACKEND_ALLOWED_HOSTS=localhost,still24.fr
+CORS_ALLOWED_ORIGINS=https://still24.fr,https://www.still24.fr
 # Use relative URLs for API calls (Nginx will route /api/ to backend)
 # This avoids CORS issues since the frontend domain == API domain
 NEXT_PUBLIC_API_URL=
@@ -131,8 +131,8 @@ NEXT_PUBLIC_MEDIA_URL=/media
 ```env
 DEBUG=False
 SECRET_KEY=votre-cle-secrete-generee
-ALLOWED_HOSTS=localhost,paulatreides.fr
-CORS_ALLOWED_ORIGINS=https://paulatreides.fr,https://www.paulatreides.fr
+ALLOWED_HOSTS=localhost,still24.fr
+CORS_ALLOWED_ORIGINS=https://still24.fr,https://www.still24.fr
 JWT_ACCESS_TOKEN_LIFETIME=60
 JWT_REFRESH_TOKEN_LIFETIME=1440
 SECURE_SSL_REDIRECT=False
@@ -141,7 +141,7 @@ CSRF_COOKIE_SECURE=False
 
 # Ntfy Notifications
 NTFY_ENABLED=True
-NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_SERVER_URL=https://ntfy.still24.fr
 NTFY_TOPIC_SUCCESS=portfolio-login-success
 NTFY_TOPIC_FAILED=portfolio-login-failed
 NTFY_AUTH_TOKEN=
@@ -160,7 +160,7 @@ Le système envoie automatiquement des notifications via **ntfy** à chaque conn
 
 ### Configuration :
 
-1. **Ton serveur ntfy est déjà configuré** sur `ntfy.paulatreides.fr`
+1. **Ton serveur ntfy est déjà configuré** sur `ntfy.still24.fr`
 
 2. **Créer 2 topics** sur ton instance :
    - `portfolio-login-success` → Connexions réussies ✅
@@ -172,7 +172,7 @@ Le système envoie automatiquement des notifications via **ntfy** à chaque conn
 
 4. **S'abonner aux topics** :
    - Ouvrir l'app ntfy
-   - Ajouter un serveur : `https://ntfy.paulatreides.fr`
+   - Ajouter un serveur : `https://ntfy.still24.fr`
    - S'abonner aux 2 topics :
      - `portfolio-login-success` (notifications normales)
      - `portfolio-login-failed` (notifications prioritaires)
@@ -180,7 +180,7 @@ Le système envoie automatiquement des notifications via **ntfy** à chaque conn
 5. **Variables d'environnement** :
 ```env
 NTFY_ENABLED=True
-NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_SERVER_URL=https://ntfy.still24.fr
 NTFY_TOPIC_SUCCESS=portfolio-login-success
 NTFY_TOPIC_FAILED=portfolio-login-failed
 # Si tu as configuré l'auth sur ton serveur ntfy :
@@ -262,13 +262,13 @@ credentials-file: /root/.cloudflared/<TUNNEL_ID>.json
 
 ingress:
   # Frontend principal
-  - hostname: paulatreides.fr
+  - hostname: still24.fr
     service: http://localhost:80
-  - hostname: www.paulatreides.fr
+  - hostname: www.still24.fr
     service: http://localhost:80
   
   # API Backend
-  - hostname: api.paulatreides.fr
+  - hostname: api.still24.fr
     service: http://localhost:80
   
   # Catch-all
@@ -276,9 +276,9 @@ ingress:
 EOF
 
 # Configurer le DNS (ajoute les CNAME automatiquement)
-cloudflared tunnel route dns portfolio paulatreides.fr
-cloudflared tunnel route dns portfolio www.paulatreides.fr
-cloudflared tunnel route dns portfolio api.paulatreides.fr
+cloudflared tunnel route dns portfolio still24.fr
+cloudflared tunnel route dns portfolio www.still24.fr
+cloudflared tunnel route dns portfolio api.still24.fr
 
 # Lancer le tunnel en service
 cloudflared service install

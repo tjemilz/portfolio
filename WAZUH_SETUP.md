@@ -180,13 +180,13 @@ journalctl -xeu wazuh-manager.service | tail -5
 
 ```bash
 # Success (200)
-curl https://paulatreides.fr/
+curl https://still24.fr/
 
 # Not Found (404)
-curl https://paulatreides.fr/page-inexistante
+curl https://still24.fr/page-inexistante
 
 # Try to login with wrong password (401)
-curl -X POST https://paulatreides.fr/api/auth/login/ \
+curl -X POST https://still24.fr/api/auth/login/ \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"WRONG"}'
 ```
@@ -315,7 +315,7 @@ sudo systemctl restart wazuh-agent
 # Vérifiez que la règle est chargée
 grep "id=\"100101\"" /var/ossec/etc/rules/portfolio.xml
 # Testez manuellement un accès 401
-curl https://paulatreides.fr/admin  # (sans token)
+curl https://still24.fr/admin  # (sans token)
 ```
 
 

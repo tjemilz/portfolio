@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'paulatreides.fr',
+        hostname: 'still24.fr',
         pathname: '/media/**',
       },
       {

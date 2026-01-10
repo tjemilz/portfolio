@@ -74,8 +74,8 @@ export default function ImageCard({
 
   if (hasError) {
     return (
-      <div className="relative aspect-[3/4] bg-gray-100 rounded-sm flex items-center justify-center">
-        <div className="text-center text-gray-400 p-4">
+      <div className="relative aspect-[3/4] bg-slate-grey/10 rounded-sm flex items-center justify-center">
+        <div className="text-center text-slate-grey p-4">
           <svg 
             className="w-12 h-12 mx-auto mb-2" 
             fill="none" 
@@ -98,7 +98,7 @@ export default function ImageCard({
   return (
     <div 
       className={`
-        group relative aspect-[3/4] overflow-hidden rounded-sm cursor-pointer bg-gray-100
+        group relative aspect-[3/4] overflow-hidden rounded-sm cursor-pointer bg-slate-grey/10
         ${isSelectionMode ? 'ring-2 ring-offset-2 transition-all' : ''}
         ${isSelected ? 'ring-accent' : 'ring-transparent'}
       `}
@@ -117,7 +117,7 @@ export default function ImageCard({
             w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all
             ${isSelected 
               ? 'bg-accent border-accent' 
-              : 'bg-white/90 border-gray-300 hover:border-accent'
+              : 'bg-white/90 border-slate-grey/50 hover:border-accent'
             }
           `}>
             {isSelected && (
@@ -176,7 +176,7 @@ export default function ImageCard({
             title="Télécharger"
           >
             <svg 
-              className="w-4 h-4 text-gray-800" 
+              className="w-4 h-4 text-space-indigo" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -193,7 +193,7 @@ export default function ImageCard({
         {/* Expand button */}
         <div className="bg-white/95 rounded-full p-2.5 shadow-lg">
           <svg 
-            className="w-4 h-4 text-gray-800" 
+            className="w-4 h-4 text-space-indigo" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"

@@ -1,14 +1,14 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import { Tinos, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./providers/AuthProvider";
 
-const playfair = Playfair_Display({
+const tinos = Tinos({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-tinos",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
 });
 
@@ -21,11 +21,11 @@ const inter = Inter({
 
 export const metadata = {
   title: {
-    default: "Emilien Fourgnier - Photographe",
-    template: "%s | Emilien Fourgnier"
+    default: "Still24 - Emilien Fourgnier",
+    template: "%s | Still24"
   },
-  description: "Portfolio photographique d'Emilien Fourgnier - Street photography, Noir & Blanc, Exploration urbaine. Découvrez mon univers visuel à travers des clichés authentiques.",
-  keywords: ["photographie", "photographe", "street photography", "noir et blanc", "portfolio", "Emilien Fourgnier", "photo urbaine", "exploration"],
+  description: "Portfolio photographique Still24 par Emilien Fourgnier - Street photography, Noir & Blanc, Exploration urbaine. Découvrez mon univers visuel à travers des clichés authentiques.",
+  keywords: ["photographie", "photographe", "street photography", "noir et blanc", "portfolio", "Still24", "Emilien Fourgnier", "photo urbaine", "exploration"],
   authors: [{ name: "Emilien Fourgnier" }],
   creator: "Emilien Fourgnier",
   icons: {
@@ -35,23 +35,23 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://emilienfourgnier.com",
-    siteName: "Emilien Fourgnier - Photographe",
-    title: "Emilien Fourgnier - Photographe",
-    description: "Portfolio photographique d'Emilien Fourgnier - Street photography, Noir & Blanc, Exploration urbaine.",
+    url: "https://still24.fr",
+    siteName: "Still24 - Emilien Fourgnier",
+    title: "Still24 - Portfolio Photographique",
+    description: "Portfolio photographique Still24 par Emilien Fourgnier - Street photography, Noir & Blanc, Exploration urbaine.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Emilien Fourgnier - Portfolio Photographique",
+        alt: "Still24 - Portfolio Photographique",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Emilien Fourgnier - Photographe",
-    description: "Portfolio photographique - Street photography, Noir & Blanc, Exploration urbaine.",
+    title: "Still24 - Emilien Fourgnier",
+    description: "Portfolio photographique Still24 - Street photography, Noir & Blanc, Exploration urbaine.",
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -74,7 +74,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body className={`${playfair.variable} ${inter.variable} font-sans antialiased bg-cream text-gray-900`}>
+      <body className={`${tinos.variable} ${inter.variable} font-sans antialiased bg-background text-foreground`}>
         <AuthProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />

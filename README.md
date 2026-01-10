@@ -1,4 +1,4 @@
-# 📸 Portfolio Photographique - paulatreides.fr
+# 📸 Portfolio Photographique - still24.fr
 
 Un portfolio photographique moderne avec système d'authentification multi-niveaux, galleries publiques et privées, et notifications de sécurité en temps réel.
 
@@ -143,7 +143,7 @@ Le système envoie des notifications push pour les événements de sécurité :
 **Configuration** (`backend/.env`) :
 ```env
 NTFY_ENABLED=True
-NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_SERVER_URL=https://ntfy.still24.fr
 NTFY_TOPIC_SUCCESS=portfolio-login-success
 NTFY_TOPIC_FAILED=portfolio-login-failed
 NTFY_AUTH_TOKEN=tk_xxxxxxxx  # Optionnel
@@ -159,16 +159,16 @@ Créer `.env` à la racine :
 ```env
 # Django
 DJANGO_SECRET_KEY=votre-clé-secrète-très-longue
-BACKEND_ALLOWED_HOSTS=paulatreides.fr,api.paulatreides.fr
-CORS_ALLOWED_ORIGINS=https://paulatreides.fr
+BACKEND_ALLOWED_HOSTS=still24.fr,api.still24.fr
+CORS_ALLOWED_ORIGINS=https://still24.fr
 
 # Frontend
-NEXT_PUBLIC_API_URL=https://paulatreides.fr/api
-NEXT_PUBLIC_MEDIA_URL=https://paulatreides.fr/media
+NEXT_PUBLIC_API_URL=https://still24.fr/api
+NEXT_PUBLIC_MEDIA_URL=https://still24.fr/media
 
 # ntfy
 NTFY_ENABLED=True
-NTFY_SERVER_URL=https://ntfy.paulatreides.fr
+NTFY_SERVER_URL=https://ntfy.still24.fr
 NTFY_TOPIC_SUCCESS=portfolio-login-success
 NTFY_TOPIC_FAILED=portfolio-login-failed
 ```

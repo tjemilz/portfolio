@@ -48,10 +48,10 @@ const AdminLayout = ({ children }) => {
   // Afficher le loader pendant la vérification
   if (isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Vérification des accès...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-slate-grey">Vérification des accès...</p>
         </div>
       </div>
     );
@@ -106,7 +106,7 @@ const AdminLayout = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       {/* Sidebar mobile overlay */}
       {sidebarOpen && (
         <div 
@@ -116,13 +116,13 @@ const AdminLayout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between h-16 px-6 bg-gray-800">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-space-indigo transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between h-16 px-6 bg-shadow-grey">
           <Link href="/admin" className="text-xl font-bold text-white">
             Admin Panel
           </Link>
           <button
-            className="lg:hidden text-gray-400 hover:text-white"
+            className="lg:hidden text-slate-grey hover:text-white"
             onClick={() => setSidebarOpen(false)}
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,7 +136,7 @@ const AdminLayout = ({ children }) => {
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition-colors mb-1"
+              className="flex items-center gap-3 px-4 py-3 text-slate-grey rounded-lg hover:bg-shadow-grey hover:text-white transition-colors mb-1"
             >
               {item.icon}
               {item.name}
@@ -144,21 +144,21 @@ const AdminLayout = ({ children }) => {
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-grey/30">
           <div className="flex items-center gap-3 px-2 mb-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-semibold">
               {(user?.username || user?.email)?.[0]?.toUpperCase() || 'A'}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
                 {user?.username || user?.email}
               </p>
-              <p className="text-xs text-gray-400">Administrateur</p>
+              <p className="text-xs text-slate-grey">Administrateur</p>
             </div>
           </div>
           <Link
             href="/"
-            className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            className="flex items-center gap-2 w-full px-4 py-2 text-slate-grey hover:bg-shadow-grey rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -174,7 +174,7 @@ const AdminLayout = ({ children }) => {
         <header className="sticky top-0 z-30 bg-white shadow">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <button
-              className="lg:hidden text-gray-600 hover:text-gray-900"
+              className="lg:hidden text-slate-grey hover:text-space-indigo"
               onClick={() => setSidebarOpen(true)}
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,7 +185,7 @@ const AdminLayout = ({ children }) => {
             <div className="flex items-center gap-4 ml-auto">
               <button
                 onClick={logout}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-slate-grey hover:text-accent transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

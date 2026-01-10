@@ -731,7 +731,7 @@ POST /api/images/download-multiple/  # Retourne un ZIP
 **Configuration**:
 ```python
 NTFY_ENABLED = True
-NTFY_SERVER_URL = 'https://ntfy.paulatreides.fr'
+NTFY_SERVER_URL = 'https://ntfy.still24.fr'
 NTFY_TOPIC_SUCCESS = 'portfolio-login-success'
 NTFY_TOPIC_FAILED = 'portfolio-login-failed'
 ```

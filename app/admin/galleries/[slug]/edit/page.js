@@ -220,15 +220,15 @@ const EditGalleryPage = () => {
         <div className="mb-6">
           <button
             onClick={() => router.push('/admin/galleries')}
-            className="text-gray-600 hover:text-gray-900 flex items-center gap-2 mb-4"
+            className="text-slate-grey hover:text-space-indigo flex items-center gap-2 mb-4"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Retour aux galeries
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Modifier la galerie</h1>
-          <p className="text-gray-600 mt-1">{formData.name}</p>
+          <h1 className="text-2xl font-bold text-space-indigo">Modifier la galerie</h1>
+          <p className="text-slate-grey mt-1">{formData.name}</p>
         </div>
 
         {/* Error */}
@@ -241,11 +241,11 @@ const EditGalleryPage = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Informations générales</h2>
+            <h2 className="text-lg font-semibold text-space-indigo mb-4">Informations générales</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Nom de la galerie *
                 </label>
                 <input
@@ -259,7 +259,7 @@ const EditGalleryPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Slug (URL)
                 </label>
                 <input
@@ -269,11 +269,11 @@ const EditGalleryPage = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">URL: /gallery/{formData.slug}</p>
+                <p className="text-xs text-slate-grey mt-1">URL: /gallery/{formData.slug}</p>
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Description
                 </label>
                 <textarea
@@ -286,7 +286,7 @@ const EditGalleryPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Type de galerie
                 </label>
                 <select
@@ -302,7 +302,7 @@ const EditGalleryPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Ordre d'affichage
                 </label>
                 <input
@@ -319,10 +319,10 @@ const EditGalleryPage = () => {
 
           {/* Cover Image */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Image de couverture</h2>
+            <h2 className="text-lg font-semibold text-space-indigo mb-4">Image de couverture</h2>
             
             <div className="flex items-start gap-6">
-              <div className="w-40 h-28 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
+              <div className="w-40 h-28 bg-slate-grey/10 rounded-lg overflow-hidden flex-shrink-0 relative">
                 {(coverPreview || existingCover) ? (
                   <>
                     <img 
@@ -341,7 +341,7 @@ const EditGalleryPage = () => {
                     </button>
                   </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <div className="w-full h-full flex items-center justify-center text-slate-grey">
                     <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -349,7 +349,7 @@ const EditGalleryPage = () => {
                 )}
               </div>
               <div>
-                <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors">
+                <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-grey/10 text-shadow-grey rounded-lg cursor-pointer hover:bg-gray-200 transition-colors">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                   </svg>
@@ -361,14 +361,14 @@ const EditGalleryPage = () => {
                     className="hidden"
                   />
                 </label>
-                <p className="text-sm text-gray-500 mt-2">Format recommandé: 16:9, JPG ou PNG</p>
+                <p className="text-sm text-slate-grey mt-2">Format recommandé: 16:9, JPG ou PNG</p>
               </div>
             </div>
           </div>
 
           {/* Visibility */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Visibilité</h2>
+            <h2 className="text-lg font-semibold text-space-indigo mb-4">Visibilité</h2>
             
             <div className="space-y-3">
               {VISIBILITY_OPTIONS.map(option => (
@@ -377,7 +377,7 @@ const EditGalleryPage = () => {
                   className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
                     formData.visibility === option.value
                       ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-grey/20 hover:border-gray-300'
                   }`}
                 >
                   <input
@@ -389,8 +389,8 @@ const EditGalleryPage = () => {
                     className="mt-1"
                   />
                   <div>
-                    <p className="font-medium text-gray-900">{option.label}</p>
-                    <p className="text-sm text-gray-500">{option.description}</p>
+                    <p className="font-medium text-space-indigo">{option.label}</p>
+                    <p className="text-sm text-slate-grey">{option.description}</p>
                   </div>
                 </label>
               ))}
@@ -399,9 +399,9 @@ const EditGalleryPage = () => {
             {/* Private gallery options */}
             {formData.visibility === 'PRIVATE' && (
               <div className="mt-6 pt-6 border-t">
-                <h3 className="font-medium text-gray-900 mb-3">Groupes autorisés</h3>
+                <h3 className="font-medium text-space-indigo mb-3">Groupes autorisés</h3>
                 {userGroups.length === 0 ? (
-                  <p className="text-sm text-gray-500">Aucun groupe créé.</p>
+                  <p className="text-sm text-slate-grey">Aucun groupe créé.</p>
                 ) : (
                   <div className="space-y-2">
                     {userGroups.map(group => (
@@ -410,7 +410,7 @@ const EditGalleryPage = () => {
                         className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${
                           formData.allowed_groups.includes(group.id)
                             ? 'border-purple-500 bg-purple-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            : 'border-slate-grey/20 hover:border-gray-300'
                         }`}
                       >
                         <input
@@ -420,9 +420,9 @@ const EditGalleryPage = () => {
                           className="w-4 h-4 text-purple-600 rounded"
                         />
                         <div>
-                          <p className="font-medium text-gray-900">{group.name}</p>
+                          <p className="font-medium text-space-indigo">{group.name}</p>
                           {group.description && (
-                            <p className="text-xs text-gray-500">{group.description}</p>
+                            <p className="text-xs text-slate-grey">{group.description}</p>
                           )}
                         </div>
                       </label>
@@ -436,11 +436,11 @@ const EditGalleryPage = () => {
           {/* Event Info (for private galleries) */}
           {formData.visibility === 'PRIVATE' && (
             <div className="bg-white rounded-xl shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Informations de l'événement</h2>
+              <h2 className="text-lg font-semibold text-space-indigo mb-4">Informations de l'événement</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Date de l'événement
                   </label>
                   <input
@@ -453,7 +453,7 @@ const EditGalleryPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
                     Lieu de l'événement
                   </label>
                   <input
@@ -470,7 +470,7 @@ const EditGalleryPage = () => {
 
           {/* Options */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Options</h2>
+            <h2 className="text-lg font-semibold text-space-indigo mb-4">Options</h2>
             
             <div className="space-y-4">
               <label className="flex items-center gap-3">
@@ -482,8 +482,8 @@ const EditGalleryPage = () => {
                   className="w-4 h-4 text-blue-600 rounded"
                 />
                 <div>
-                  <p className="font-medium text-gray-900">Galerie mise en avant</p>
-                  <p className="text-sm text-gray-500">Afficher cette galerie en priorité</p>
+                  <p className="font-medium text-space-indigo">Galerie mise en avant</p>
+                  <p className="text-sm text-slate-grey">Afficher cette galerie en priorité</p>
                 </div>
               </label>
 
@@ -496,8 +496,8 @@ const EditGalleryPage = () => {
                   className="w-4 h-4 text-blue-600 rounded"
                 />
                 <div>
-                  <p className="font-medium text-gray-900">Autoriser le téléchargement</p>
-                  <p className="text-sm text-gray-500">Les visiteurs peuvent télécharger les images</p>
+                  <p className="font-medium text-space-indigo">Autoriser le téléchargement</p>
+                  <p className="text-sm text-slate-grey">Les visiteurs peuvent télécharger les images</p>
                 </div>
               </label>
             </div>
@@ -508,7 +508,7 @@ const EditGalleryPage = () => {
             <button
               type="button"
               onClick={() => router.push('/admin/galleries')}
-              className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-6 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Annuler
             </button>

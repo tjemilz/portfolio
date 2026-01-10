@@ -182,8 +182,8 @@ const ImagesManagementPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des images</h1>
-          <p className="text-gray-600 mt-1">{images.length} images au total</p>
+          <h1 className="text-2xl font-bold text-space-indigo">Gestion des images</h1>
+          <p className="text-slate-grey mt-1">{images.length} images au total</p>
         </div>
         <button
           onClick={() => setUploadModal({ open: true })}
@@ -201,7 +201,7 @@ const ImagesManagementPage = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-grey" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -266,7 +266,7 @@ const ImagesManagementPage = () => {
       {loading && (
         <div className="bg-white rounded-xl shadow p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Chargement des images...</p>
+          <p className="text-slate-grey mt-4">Chargement des images...</p>
         </div>
       )}
 
@@ -283,7 +283,7 @@ const ImagesManagementPage = () => {
               <svg className="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-gray-500">Aucune image trouvée</p>
+              <p className="text-slate-grey">Aucune image trouvée</p>
             </div>
           ) : (
             <>
@@ -294,7 +294,7 @@ const ImagesManagementPage = () => {
                   onChange={toggleSelectAll}
                   className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-600">Tout sélectionner ({filteredImages.length})</span>
+                <span className="text-sm text-slate-grey">Tout sélectionner ({filteredImages.length})</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -302,7 +302,7 @@ const ImagesManagementPage = () => {
                   <div 
                     key={image.id}
                     className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImages.includes(image.id) ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                      selectedImages.includes(image.id) ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-grey/20 hover:border-gray-300'
                     }`}
                   >
                     <div className="absolute top-2 left-2 z-10">
@@ -314,7 +314,7 @@ const ImagesManagementPage = () => {
                       />
                     </div>
 
-                    <div className="aspect-square bg-gray-100">
+                    <div className="aspect-square bg-slate-grey/10">
                       <img
                         src={image.thumbnail_url || image.image_url}
                         alt={image.alt_text || image.title || 'Image'}
@@ -325,7 +325,7 @@ const ImagesManagementPage = () => {
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                       <button
                         onClick={() => window.open(image.image_url, '_blank')}
-                        className="p-2 bg-white rounded-full text-gray-700 hover:bg-gray-100"
+                        className="p-2 bg-white rounded-full text-shadow-grey hover:bg-slate-grey/10"
                         title="Voir"
                       >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -385,15 +385,15 @@ const ImagesManagementPage = () => {
       {deleteModal.open && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirmer la suppression</h3>
-            <p className="text-gray-600 mb-4">Cette action est irréversible.</p>
+            <h3 className="text-lg font-semibold text-space-indigo mb-2">Confirmer la suppression</h3>
+            <p className="text-slate-grey mb-4">Cette action est irréversible.</p>
             {deleteModal.image && (
-              <div className="mb-4 p-2 bg-gray-100 rounded-lg">
+              <div className="mb-4 p-2 bg-slate-grey/10 rounded-lg">
                 <img src={deleteModal.image.thumbnail_url || deleteModal.image.image_url} alt="" className="w-full h-32 object-cover rounded" />
               </div>
             )}
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setDeleteModal({ open: false, image: null })} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Annuler</button>
+              <button onClick={() => setDeleteModal({ open: false, image: null })} className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200">Annuler</button>
               <button onClick={() => handleDelete(deleteModal.image)} className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700">Supprimer</button>
             </div>
           </div>
@@ -450,22 +450,22 @@ const EditGalleriesModal = ({ open, image, galleries, onClose, onSave }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Modifier les galeries</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+          <h3 className="text-lg font-semibold text-space-indigo">Modifier les galeries</h3>
+          <button onClick={onClose} className="text-slate-grey hover:text-slate-grey">✕</button>
         </div>
 
-        <div className="mb-4 p-2 bg-gray-100 rounded-lg">
+        <div className="mb-4 p-2 bg-slate-grey/10 rounded-lg">
           <img src={image.thumbnail_url || image.image_url} alt="" className="w-full h-40 object-cover rounded" />
         </div>
 
-        <p className="text-sm text-gray-600 mb-3">Sélectionnez les galeries :</p>
+        <p className="text-sm text-slate-grey mb-3">Sélectionnez les galeries :</p>
         <div className="space-y-2 max-h-60 overflow-auto">
           {galleries.map(gallery => (
-            <label key={gallery.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(gallery.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>
+            <label key={gallery.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(gallery.id) ? 'border-blue-500 bg-blue-50' : 'border-slate-grey/20 hover:border-gray-300'}`}>
               <input type="checkbox" checked={selectedGalleryIds.includes(gallery.id)} onChange={() => toggleGallery(gallery.id)} className="w-4 h-4 text-blue-600 rounded" />
               <div>
-                <p className="font-medium text-gray-900">{gallery.name}</p>
-                <p className="text-xs text-gray-500">{gallery.visibility} • {gallery.image_count || 0} images</p>
+                <p className="font-medium text-space-indigo">{gallery.name}</p>
+                <p className="text-xs text-slate-grey">{gallery.visibility} • {gallery.image_count || 0} images</p>
               </div>
             </label>
           ))}
@@ -474,7 +474,7 @@ const EditGalleriesModal = ({ open, image, galleries, onClose, onSave }) => {
         {selectedGalleryIds.length === 0 && <p className="text-sm text-orange-600 mt-2">⚠️ Aucune galerie sélectionnée</p>}
 
         <div className="flex gap-3 justify-end mt-6">
-          <button onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Annuler</button>
+          <button onClick={onClose} className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200">Annuler</button>
           <button onClick={() => onSave(image.id, selectedGalleryIds)} className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">Enregistrer</button>
         </div>
       </div>
@@ -502,26 +502,26 @@ const BulkGalleryModal = ({ open, action, galleries, selectedCount, onClose, onS
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">{action === 'add' ? 'Ajouter à' : 'Retirer de'} des galeries</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+          <h3 className="text-lg font-semibold text-space-indigo">{action === 'add' ? 'Ajouter à' : 'Retirer de'} des galeries</h3>
+          <button onClick={onClose} className="text-slate-grey hover:text-slate-grey">✕</button>
         </div>
 
-        <p className="text-sm text-gray-600 mb-4">{selectedCount} image(s) sélectionnée(s)</p>
+        <p className="text-sm text-slate-grey mb-4">{selectedCount} image(s) sélectionnée(s)</p>
 
         <div className="space-y-2 max-h-60 overflow-auto">
           {galleries.map(gallery => (
-            <label key={gallery.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(gallery.id) ? (action === 'add' ? 'border-green-500 bg-green-50' : 'border-orange-500 bg-orange-50') : 'border-gray-200 hover:border-gray-300'}`}>
+            <label key={gallery.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(gallery.id) ? (action === 'add' ? 'border-green-500 bg-green-50' : 'border-orange-500 bg-orange-50') : 'border-slate-grey/20 hover:border-gray-300'}`}>
               <input type="checkbox" checked={selectedGalleryIds.includes(gallery.id)} onChange={() => toggleGallery(gallery.id)} className="w-4 h-4 rounded" />
               <div>
-                <p className="font-medium text-gray-900">{gallery.name}</p>
-                <p className="text-xs text-gray-500">{gallery.visibility}</p>
+                <p className="font-medium text-space-indigo">{gallery.name}</p>
+                <p className="text-xs text-slate-grey">{gallery.visibility}</p>
               </div>
             </label>
           ))}
         </div>
 
         <div className="flex gap-3 justify-end mt-6">
-          <button onClick={() => { onClose(); setSelectedGalleryIds([]); }} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Annuler</button>
+          <button onClick={() => { onClose(); setSelectedGalleryIds([]); }} className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200">Annuler</button>
           <button onClick={handleSave} disabled={selectedGalleryIds.length === 0} className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 ${action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'}`}>
             {action === 'add' ? 'Ajouter' : 'Retirer'}
           </button>
@@ -627,38 +627,38 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-auto">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-space-indigo">
             {step === 1 && 'Sélectionner les galeries'}
             {step === 2 && 'Ajouter les images'}
             {step === 3 && 'Terminé'}
           </h3>
-          <button onClick={reset} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={reset} className="text-slate-grey hover:text-slate-grey">✕</button>
         </div>
 
         {step === 1 && (
           <>
-            <p className="text-sm text-gray-600 mb-4">Dans quelles galeries ajouter les images ?</p>
+            <p className="text-sm text-slate-grey mb-4">Dans quelles galeries ajouter les images ?</p>
             
             {/* Option sans galerie */}
-            <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer mb-4 ${noGallery ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
+            <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer mb-4 ${noGallery ? 'border-orange-500 bg-orange-50' : 'border-slate-grey/20 hover:border-gray-300'}`}>
               <input type="checkbox" checked={noGallery} onChange={toggleNoGallery} className="w-4 h-4 text-orange-600 rounded" />
               <div>
-                <p className="font-medium text-gray-900">Sans galerie</p>
-                <p className="text-xs text-gray-500">Les images pourront être assignées plus tard</p>
+                <p className="font-medium text-space-indigo">Sans galerie</p>
+                <p className="text-xs text-slate-grey">Les images pourront être assignées plus tard</p>
               </div>
             </label>
 
             <div className="border-t pt-4 mb-2">
-              <p className="text-xs text-gray-500 mb-2">Ou sélectionnez une ou plusieurs galeries :</p>
+              <p className="text-xs text-slate-grey mb-2">Ou sélectionnez une ou plusieurs galeries :</p>
             </div>
             
             <div className="space-y-2 max-h-48 overflow-auto mb-6">
               {galleries.map(g => (
-                <label key={g.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(g.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'} ${noGallery ? 'opacity-50 pointer-events-none' : ''}`}>
+                <label key={g.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${selectedGalleryIds.includes(g.id) ? 'border-blue-500 bg-blue-50' : 'border-slate-grey/20'} ${noGallery ? 'opacity-50 pointer-events-none' : ''}`}>
                   <input type="checkbox" checked={selectedGalleryIds.includes(g.id)} onChange={() => toggleGallery(g.id)} disabled={noGallery} className="w-4 h-4 text-blue-600 rounded" />
                   <div>
-                    <p className="font-medium text-gray-900">{g.name}</p>
-                    <p className="text-xs text-gray-500">{g.visibility}</p>
+                    <p className="font-medium text-space-indigo">{g.name}</p>
+                    <p className="text-xs text-slate-grey">{g.visibility}</p>
                   </div>
                 </label>
               ))}
@@ -671,7 +671,7 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
 
         {step === 2 && (
           <>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-slate-grey mb-4">
               {noGallery 
                 ? <span className="text-orange-600 font-medium">Sans galerie</span>
                 : <>Galeries: {galleries.filter(g => selectedGalleryIds.includes(g.id)).map(g => g.name).join(', ')}</>
@@ -679,10 +679,10 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
             </p>
             
             <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()} className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 mb-4">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-12 h-12 text-slate-grey mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-gray-600 mb-2">Glissez-déposez vos images</p>
+              <p className="text-slate-grey mb-2">Glissez-déposez vos images</p>
               <label className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700">
                 Parcourir
                 <input type="file" multiple accept="image/*" onChange={handleFileSelect} className="hidden" />
@@ -692,20 +692,20 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
             {files.length > 0 && (
               <div className="space-y-2 max-h-40 overflow-auto mb-4">
                 {files.map((file, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                  <div key={i} className="flex items-center gap-3 p-2 bg-slate-grey/5 rounded-lg">
                     <img src={URL.createObjectURL(file)} alt="" className="w-10 h-10 object-cover rounded" />
                     <span className="flex-1 text-sm truncate">{file.name}</span>
                     {uploadProgress[i] === 'uploading' && <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />}
                     {uploadProgress[i] === 'success' && <span className="text-green-600">✓</span>}
                     {uploadProgress[i] === 'error' && <span className="text-red-600">✗</span>}
-                    {!uploadProgress[i] && <button onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-600">✕</button>}
+                    {!uploadProgress[i] && <button onClick={() => removeFile(i)} className="text-slate-grey hover:text-red-600">✕</button>}
                   </div>
                 ))}
               </div>
             )}
 
             <div className="flex justify-between">
-              <button onClick={() => setStep(1)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Retour</button>
+              <button onClick={() => setStep(1)} className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200">Retour</button>
               <button onClick={handleUpload} disabled={files.length === 0 || uploading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
                 {uploading ? 'Upload...' : `Uploader ${files.length} image(s)`}
               </button>

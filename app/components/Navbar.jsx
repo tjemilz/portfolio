@@ -134,7 +134,7 @@ const Navbar = () => {
   return (
     <nav 
       ref={navbarRef}
-      className={`flex flex-col md:flex-row items-center justify-between py-4 px-8 bg-cream/95 backdrop-blur-md fixed top-0 left-0 right-0 z-50
+      className={`flex flex-col md:flex-row items-center justify-between py-4 px-8 bg-background/95 backdrop-blur-md fixed top-0 left-0 right-0 z-50
         ${isHomePage ? '' : 'transition-all duration-500'}
         ${shouldBeVisible || forceVisible ? 'translate-y-0' : 'translate-y-[-100%]'}
         ${(shouldBeVisible && !isHomePage) || forceVisible ? 'shadow-sm' : ''}
@@ -145,8 +145,8 @@ const Navbar = () => {
     >
       {/* En-tête de navigation avec logo et bouton menu */}
       <div className="flex w-full md:w-auto justify-between items-center">
-        <Link href="/" className="text-xl font-serif font-bold text-gray-900 hover:text-accent transition-colors tracking-tight">
-          Emilien Fourgnier
+        <Link href="/" className="text-xl font-serif font-bold text-space-indigo hover:text-accent transition-colors tracking-tight">
+          Still24
         </Link>
         
         {/* Bouton menu hamburger - visible uniquement sur mobile */}
@@ -155,15 +155,15 @@ const Navbar = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Menu"
         >
-          <span className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-gray-800 transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-space-indigo transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-space-indigo transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-space-indigo transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
       </div>
       
       {/* Liens de navigation - affichage conditionnel sur mobile */}
       <div 
-        className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row md:space-x-8 items-center space-y-4 md:space-y-0 w-full md:w-auto pt-4 md:pt-0 mt-4 md:mt-0 border-t md:border-t-0 border-gray-200`}
+        className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row md:space-x-8 items-center space-y-4 md:space-y-0 w-full md:w-auto pt-4 md:pt-0 mt-4 md:mt-0 border-t md:border-t-0 border-slate-grey/20`}
       >
         {/* Liens dynamiques des galeries publiques */}
         {galleriesLoading ? (
@@ -181,7 +181,7 @@ const Navbar = () => {
               className={`relative text-sm font-medium uppercase tracking-wider transition-colors ${
                 pathname === `/gallery/${gallery.slug}` 
                   ? 'text-accent' 
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-grey hover:text-space-indigo'
               } after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-accent after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:origin-left ${
                 pathname === `/gallery/${gallery.slug}` ? 'after:scale-x-100' : ''
               }`}
@@ -197,7 +197,7 @@ const Navbar = () => {
           className={`relative text-sm font-medium uppercase tracking-wider transition-colors flex items-center gap-1 ${
             pathname === '/galleries' 
               ? 'text-accent' 
-              : 'text-gray-600 hover:text-gray-900'
+              : 'text-slate-grey hover:text-space-indigo'
           }`}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -211,7 +211,7 @@ const Navbar = () => {
           className={`px-5 py-2 rounded-full font-medium text-sm transition-all duration-300 ${
             pathname === '/bio' 
               ? 'bg-accent text-white' 
-              : 'bg-gray-900 text-white hover:bg-gray-800'
+              : 'bg-space-indigo text-white hover:bg-shadow-grey'
           }`}
         >
           À propos

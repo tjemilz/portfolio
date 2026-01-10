@@ -25,13 +25,13 @@ const Carousel = ({ children: slides }) => {
       <div className="absolute inset-0 flex items-center justify-between p-4">
         <button
           onClick={prev}
-          className="p-1 rounded-full bg-white/70 shadow text-gray-800 hover:bg-white"
+          className="p-1 rounded-full bg-white/70 shadow text-space-indigo hover:bg-white"
         >
           <ChevronLeft size={30} />
         </button>
         <button
           onClick={next}
-          className="p-1 rounded-full bg-white/70 shadow text-gray-800 hover:bg-white"
+          className="p-1 rounded-full bg-white/70 shadow text-space-indigo hover:bg-white"
         >
           <ChevronRight size={30} />
         </button>

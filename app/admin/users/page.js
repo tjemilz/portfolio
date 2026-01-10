@@ -144,7 +144,7 @@ const UsersManagementPage = () => {
       case 'PRIVATE':
         return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-grey/10 text-gray-800';
     }
   };
 
@@ -164,8 +164,8 @@ const UsersManagementPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des utilisateurs</h1>
-          <p className="text-gray-600 mt-1">{users.length} utilisateurs au total</p>
+          <h1 className="text-2xl font-bold text-space-indigo">Gestion des utilisateurs</h1>
+          <p className="text-slate-grey mt-1">{users.length} utilisateurs au total</p>
         </div>
         <button
           onClick={() => setCreateModal(true)}
@@ -183,7 +183,7 @@ const UsersManagementPage = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-grey" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -212,7 +212,7 @@ const UsersManagementPage = () => {
       {loading && (
         <div className="bg-white rounded-xl shadow p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Chargement des utilisateurs...</p>
+          <p className="text-slate-grey mt-4">Chargement des utilisateurs...</p>
         </div>
       )}
 
@@ -228,21 +228,21 @@ const UsersManagementPage = () => {
         <div className="bg-white rounded-xl shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-slate-grey/5 border-b border-slate-grey/20">
                 <tr>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-grey uppercase tracking-wider">
                     Utilisateur
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-grey uppercase tracking-wider">
                     Rôle
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-grey uppercase tracking-wider">
                     Date d'inscription
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-grey uppercase tracking-wider">
                     Statut
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-slate-grey uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -250,14 +250,14 @@ const UsersManagementPage = () => {
               <tbody className="divide-y divide-gray-200">
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-grey">
                       {users.length === 0 ? (
                         <div>
                           <svg className="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                           </svg>
-                          <p className="text-gray-600 mb-2">L'endpoint utilisateurs n'est pas encore configuré.</p>
-                          <p className="text-sm text-gray-400">Ajoutez les routes API pour /api/auth/users/ dans votre backend.</p>
+                          <p className="text-slate-grey mb-2">L'endpoint utilisateurs n'est pas encore configuré.</p>
+                          <p className="text-sm text-slate-grey">Ajoutez les routes API pour /api/auth/users/ dans votre backend.</p>
                         </div>
                       ) : (
                         "Aucun utilisateur trouvé"
@@ -266,15 +266,15 @@ const UsersManagementPage = () => {
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-slate-grey/5">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
                             {(user.username || user.email)?.[0]?.toUpperCase() || 'U'}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{user.username}</p>
-                            <p className="text-sm text-gray-500">{user.email}</p>
+                            <p className="font-medium text-space-indigo">{user.username}</p>
+                            <p className="text-sm text-slate-grey">{user.email}</p>
                           </div>
                         </div>
                       </td>
@@ -284,7 +284,7 @@ const UsersManagementPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-slate-grey">
                           {user.date_joined 
                             ? new Date(user.date_joined).toLocaleDateString('fr-FR')
                             : '-'}
@@ -332,41 +332,41 @@ const UsersManagementPage = () => {
       {editModal.open && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-space-indigo mb-4">
               Modifier le rôle de {editModal.user?.username}
             </h3>
             <div className="space-y-3 mb-6">
               <button
                 onClick={() => handleRoleChange(editModal.user, 'PUBLIC')}
                 className={`w-full p-3 text-left rounded-lg border-2 transition-colors ${
-                  editModal.user?.role === 'PUBLIC' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                  editModal.user?.role === 'PUBLIC' ? 'border-blue-500 bg-blue-50' : 'border-slate-grey/20 hover:border-gray-300'
                 }`}
               >
-                <p className="font-medium text-gray-900">Public</p>
-                <p className="text-sm text-gray-500">Accès aux galeries publiques uniquement</p>
+                <p className="font-medium text-space-indigo">Public</p>
+                <p className="text-sm text-slate-grey">Accès aux galeries publiques uniquement</p>
               </button>
               <button
                 onClick={() => handleRoleChange(editModal.user, 'PRIVATE')}
                 className={`w-full p-3 text-left rounded-lg border-2 transition-colors ${
-                  editModal.user?.role === 'PRIVATE' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-gray-300'
+                  editModal.user?.role === 'PRIVATE' ? 'border-purple-500 bg-purple-50' : 'border-slate-grey/20 hover:border-gray-300'
                 }`}
               >
-                <p className="font-medium text-gray-900">Privé</p>
-                <p className="text-sm text-gray-500">Accès aux galeries privées partagées</p>
+                <p className="font-medium text-space-indigo">Privé</p>
+                <p className="text-sm text-slate-grey">Accès aux galeries privées partagées</p>
               </button>
               <button
                 onClick={() => handleRoleChange(editModal.user, 'ADMIN')}
                 className={`w-full p-3 text-left rounded-lg border-2 transition-colors ${
-                  editModal.user?.role === 'ADMIN' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                  editModal.user?.role === 'ADMIN' ? 'border-red-500 bg-red-50' : 'border-slate-grey/20 hover:border-gray-300'
                 }`}
               >
-                <p className="font-medium text-gray-900">Administrateur</p>
-                <p className="text-sm text-gray-500">Accès complet à toutes les fonctionnalités</p>
+                <p className="font-medium text-space-indigo">Administrateur</p>
+                <p className="text-sm text-slate-grey">Accès complet à toutes les fonctionnalités</p>
               </button>
             </div>
             <button
               onClick={() => setEditModal({ open: false, user: null })}
-              className="w-full px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="w-full px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Fermer
             </button>
@@ -378,17 +378,17 @@ const UsersManagementPage = () => {
       {deleteModal.open && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-space-indigo mb-2">
               Confirmer la suppression
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-slate-grey mb-6">
               Êtes-vous sûr de vouloir supprimer l'utilisateur "{deleteModal.user?.username}" ?
               Cette action est irréversible.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteModal({ open: false, user: null })}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Annuler
               </button>
@@ -408,12 +408,12 @@ const UsersManagementPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-space-indigo">
                 Nouvel utilisateur
               </h3>
               <button
                 onClick={() => setCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-grey hover:text-slate-grey"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -423,7 +423,7 @@ const UsersManagementPage = () => {
             
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Nom d'utilisateur *
                 </label>
                 <input
@@ -437,7 +437,7 @@ const UsersManagementPage = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Email *
                 </label>
                 <input
@@ -451,7 +451,7 @@ const UsersManagementPage = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Mot de passe *
                 </label>
                 <input
@@ -466,7 +466,7 @@ const UsersManagementPage = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-shadow-grey mb-1">
                   Rôle
                 </label>
                 <select
@@ -484,7 +484,7 @@ const UsersManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setCreateModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>

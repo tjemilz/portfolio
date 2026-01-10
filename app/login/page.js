@@ -52,30 +52,30 @@ function LoginForm() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-10 h-10 border-2 border-accent/20 border-t-accent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-block">
-            <span className="font-serif text-3xl text-gray-900">Portfolio</span>
+            <span className="font-serif text-3xl text-space-indigo">Still24</span>
           </Link>
-          <h1 className="mt-8 font-serif text-2xl text-gray-900">
+          <h1 className="mt-8 font-serif text-2xl text-space-indigo">
             Connexion
           </h1>
-          <p className="mt-2 text-gray-500 font-light">
+          <p className="mt-2 text-slate-grey font-light">
             Accédez à vos galeries privées
           </p>
         </div>
         
         {/* Form Card */}
-        <div className="bg-white p-8 rounded-sm shadow-sm border border-gray-100">
+        <div className="bg-white p-8 rounded-sm shadow-sm border border-slate-grey/10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="p-4 bg-red-50 border border-red-100 rounded-sm">
@@ -84,7 +84,7 @@ function LoginForm() {
             )}
             
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-shadow-grey mb-2">
                 Nom d'utilisateur
               </label>
               <input
@@ -93,7 +93,7 @@ function LoginForm() {
                 type="text"
                 autoComplete="username"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                className="w-full px-4 py-3 border border-slate-grey/20 rounded-sm text-space-indigo placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
                 placeholder="Entrez votre identifiant"
                 value={formData.username}
                 onChange={handleChange}
@@ -101,7 +101,7 @@ function LoginForm() {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-shadow-grey mb-2">
                 Mot de passe
               </label>
               <input
@@ -110,7 +110,7 @@ function LoginForm() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                className="w-full px-4 py-3 border border-slate-grey/20 rounded-sm text-space-indigo placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
                 placeholder="Entrez votre mot de passe"
                 value={formData.password}
                 onChange={handleChange}
@@ -120,7 +120,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gray-900 text-white rounded-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3 px-4 bg-space-indigo text-white rounded-sm font-medium hover:bg-shadow-grey focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -141,12 +141,12 @@ function LoginForm() {
         <div className="mt-8 text-center">
           <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-accent transition-colors group"
+            className="inline-flex items-center gap-2 text-slate-grey hover:text-accent transition-colors group"
           >
             <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Retour au portfolio
+            Retour au site
           </Link>
         </div>
       </div>
@@ -157,7 +157,7 @@ function LoginForm() {
 // Loading fallback for Suspense
 function LoginLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-10 h-10 border-2 border-accent/20 border-t-accent rounded-full animate-spin"></div>
     </div>
   );
