@@ -3,11 +3,8 @@ Views for galleries app.
 """
 
 import os
-import io
 import mimetypes
 import zipfile
-from PIL import Image as PILImage
-from PIL.ExifTags import TAGS
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -16,8 +13,6 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponse
 from django.conf import settings
-from django.core.files.base import ContentFile
-from datetime import datetime
 
 from .models import Gallery, Image, UserGroup
 from .serializers import (
@@ -30,85 +25,6 @@ from .permissions import CanAccessGallery, CanUploadImage, CanDeleteImage, IsAdm
 # Constantes pour l'upload
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
-THUMBNAIL_SIZE = (400, 400)
-
-
-def extract_exif_data(image_file):
-    """Extrait les données EXIF d'une image."""
-    exif_data = {}
-    try:
-        img = PILImage.open(image_file)
-        exif = img._getexif()
-        if exif:
-            for tag_id, value in exif.items():
-                tag = TAGS.get(tag_id, tag_id)
-                
-                if tag == 'Make':
-                    exif_data['camera_make'] = str(value)
-                elif tag == 'Model':
-                    exif_data['camera'] = str(value)
-                elif tag == 'LensModel':
-                    exif_data['lens'] = str(value)
-                elif tag == 'FocalLength':
-                    if hasattr(value, 'numerator'):
-                        exif_data['focal_length'] = f"{value.numerator / value.denominator}mm"
-                    else:
-                        exif_data['focal_length'] = f"{value}mm"
-                elif tag == 'FNumber':
-                    if hasattr(value, 'numerator'):
-                        exif_data['aperture'] = f"f/{value.numerator / value.denominator}"
-                    else:
-                        exif_data['aperture'] = f"f/{value}"
-                elif tag == 'ExposureTime':
-                    if hasattr(value, 'numerator') and hasattr(value, 'denominator'):
-                        if value.numerator < value.denominator:
-                            exif_data['shutter_speed'] = f"{value.numerator}/{value.denominator}s"
-                        else:
-                            exif_data['shutter_speed'] = f"{value.numerator / value.denominator}s"
-                    else:
-                        exif_data['shutter_speed'] = f"{value}s"
-                elif tag == 'ISOSpeedRatings':
-                    exif_data['iso'] = int(value) if isinstance(value, (int, float)) else int(value[0]) if isinstance(value, tuple) else None
-                elif tag == 'DateTimeOriginal':
-                    try:
-                        exif_data['taken_at'] = datetime.strptime(str(value), '%Y:%m:%d %H:%M:%S')
-                    except:
-                        pass
-        img.close()
-    except Exception as e:
-        print(f"Error extracting EXIF: {e}")
-    
-    return exif_data
-
-
-def generate_thumbnail(image_file, max_size=THUMBNAIL_SIZE):
-    """Génère une miniature de l'image."""
-    try:
-        img = PILImage.open(image_file)
-        
-        # Convertir en RGB si nécessaire
-        if img.mode in ('RGBA', 'P'):
-            img = img.convert('RGB')
-        
-        # Préserver l'orientation EXIF
-        try:
-            from PIL import ImageOps
-            img = ImageOps.exif_transpose(img)
-        except:
-            pass
-        
-        # Créer la miniature
-        img.thumbnail(max_size, PILImage.Resampling.LANCZOS)
-        
-        # Sauvegarder en mémoire
-        thumb_io = io.BytesIO()
-        img.save(thumb_io, format='JPEG', quality=85, optimize=True)
-        thumb_io.seek(0)
-        
-        return thumb_io
-    except Exception as e:
-        print(f"Error generating thumbnail: {e}")
-        return None
 
 
 class GalleryViewSet(viewsets.ModelViewSet):
@@ -255,48 +171,22 @@ class GalleryViewSet(viewsets.ModelViewSet):
                 continue
             
             try:
-                # Extraire les données EXIF
-                file.seek(0)
-                exif_data = extract_exif_data(file)
-                file.seek(0)
-                
-                # Générer la miniature
-                thumbnail_io = generate_thumbnail(file)
-                file.seek(0)
-                
-                # Obtenir les dimensions
-                img = PILImage.open(file)
-                width, height = img.size
-                img.close()
-                file.seek(0)
-                
-                # Créer l'objet Image
+                # Créer l'objet Image avec les données de base
                 image = Image(
                     image=file,
                     title=os.path.splitext(file.name)[0],
-                    width=width,
-                    height=height,
                     file_size=file.size,
-                    camera=exif_data.get('camera', ''),
-                    lens=exif_data.get('lens', ''),
-                    focal_length=exif_data.get('focal_length', ''),
-                    aperture=exif_data.get('aperture', ''),
-                    shutter_speed=exif_data.get('shutter_speed', ''),
-                    iso=exif_data.get('iso'),
-                    taken_at=exif_data.get('taken_at'),
                     uploaded_by=request.user
                 )
                 
-                # Sauvegarder l'image d'abord
+                # Sauvegarder l'image - les signaux vont automatiquement :
+                # 1. Extraire les données EXIF
+                # 2. Générer le thumbnail 
+                # 3. Calculer les dimensions
                 image.save()
                 
                 # Associer à la galerie (ManyToMany)
                 image.galleries.add(gallery)
-                
-                # Ajouter la miniature si générée
-                if thumbnail_io:
-                    thumb_filename = f"thumb_{image.pk}.jpg"
-                    image.thumbnail.save(thumb_filename, ContentFile(thumbnail_io.read()), save=True)
                 
                 uploaded_images.append(ImageSerializer(image, context={'request': request}).data)
                 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminLayout from '../../../AdminLayout';
+import { galleriesApi, imagesApi } from '../../../../lib/api';
 
 const GalleryImagesPage = () => {
   const params = useParams();
@@ -23,38 +24,39 @@ const GalleryImagesPage = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
+      setLoading(true);
+      setError(null);
 
-      // Fetch gallery and all images in parallel
-      const [galleryRes, imagesRes] = await Promise.all([
-        fetch(`/api/galleries/${slug}/`, { headers }),
-        fetch('/api/images/?page_size=all', { headers })
+      // Fetch gallery and its images
+      const [galleryData, galleryImagesData] = await Promise.all([
+        galleriesApi.getBySlug(slug),
+        galleriesApi.getImages(slug) // Récupérer seulement les images de cette galerie
       ]);
 
-      if (!galleryRes.ok) {
-        throw new Error('Galerie non trouvée');
-      }
-
-      const galleryData = await galleryRes.json();
-      const imagesData = await imagesRes.json();
-
       setGallery(galleryData);
-      setAllImages(imagesData.results || imagesData);
       
-      // Initialize selected images from gallery
-      const galleryImageIds = new Set(
-        (galleryData.images || []).map(img => img.id)
-      );
+      // Les images de cette galerie spécifique
+      let imagesList = [];
+      if (galleryImagesData && typeof galleryImagesData === 'object') {
+        if (Array.isArray(galleryImagesData)) {
+          imagesList = galleryImagesData;
+        } else if (Array.isArray(galleryImagesData.results)) {
+          imagesList = galleryImagesData.results;
+        } else if (Array.isArray(galleryImagesData.data)) {
+          imagesList = galleryImagesData.data;
+        }
+      }
+      
+      setAllImages(imagesList);
+      
+      // Toutes les images de cette galerie sont sélectionnées par défaut
+      const galleryImageIds = new Set(imagesList.map(img => img.id));
       setSelectedImages(galleryImageIds);
       
-      setLoading(false);
     } catch (err) {
       console.error('Erreur:', err);
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -82,53 +84,26 @@ const GalleryImagesPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('access_token');
+      // Récupérer les IDs des images actuellement dans la galerie
+      const currentImageIds = new Set(allImages.map(img => img.id));
       
-      // Get current gallery images
-      const currentImageIds = new Set((gallery.images || []).map(img => img.id));
-      
-      // Find images to add and remove
-      const toAdd = [...selectedImages].filter(id => !currentImageIds.has(id));
+      // Trouver les images à supprimer de la galerie (celles qui étaient dans la galerie mais ne sont plus sélectionnées)
       const toRemove = [...currentImageIds].filter(id => !selectedImages.has(id));
 
-      // Update each image
-      const updatePromises = [];
-      
-      // For images to add, add this gallery to their galleries
-      for (const imageId of toAdd) {
-        const image = allImages.find(img => img.id === imageId);
-        if (image) {
-          const currentGalleryIds = (image.galleries || []).map(g => g.id);
-          updatePromises.push(
-            fetch(`/api/images/${imageId}/`, {
-              method: 'PATCH',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                gallery_ids: [...currentGalleryIds, gallery.id]
-              })
-            })
-          );
-        }
+      if (toRemove.length === 0) {
+        alert('Aucune modification à sauvegarder');
+        return;
       }
 
-      // For images to remove, remove this gallery from their galleries
+      // Supprimer les images désélectionnées de cette galerie
+      const updatePromises = [];
       for (const imageId of toRemove) {
         const image = allImages.find(img => img.id === imageId);
         if (image) {
           const currentGalleryIds = (image.galleries || []).map(g => g.id);
           updatePromises.push(
-            fetch(`/api/images/${imageId}/`, {
-              method: 'PATCH',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                gallery_ids: currentGalleryIds.filter(gid => gid !== gallery.id)
-              })
+            imagesApi.update(imageId, {
+              gallery_ids: currentGalleryIds.filter(gid => gid !== gallery.id)
             })
           );
         }
@@ -136,9 +111,11 @@ const GalleryImagesPage = () => {
 
       await Promise.all(updatePromises);
       
-      // Refresh data
+      // Rafraîchir les données pour refléter les changements
       await fetchData();
-      alert('Images mises à jour avec succès');
+      
+      const removedCount = toRemove.length;
+      alert(`${removedCount} image(s) supprimée(s) de la galerie avec succès`);
     } catch (err) {
       console.error('Erreur:', err);
       alert('Erreur lors de la mise à jour des images');
@@ -147,14 +124,14 @@ const GalleryImagesPage = () => {
     }
   };
 
-  const filteredImages = allImages.filter(image => {
+  const filteredImages = Array.isArray(allImages) ? allImages.filter(image => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
       (image.title && image.title.toLowerCase().includes(query)) ||
       (image.description && image.description.toLowerCase().includes(query))
     );
-  });
+  }) : [];
 
   const galleryImageCount = selectedImages.size;
 

@@ -3,8 +3,15 @@ Django settings for portfolio_api project.
 """
 
 import os
+import sys
+import platform
 from pathlib import Path
 from datetime import timedelta
+
+# Détection du système d'exploitation
+IS_WINDOWS = platform.system() == 'Windows'
+IS_LINUX = platform.system() == 'Linux'
+IS_MAC = platform.system() == 'Darwin'
 
 # Try to import decouple, fallback to environment variables
 try:
@@ -218,6 +225,58 @@ NTFY_AUTH_TOKEN = config('NTFY_AUTH_TOKEN', default=None)  # For private topics
 # ===========================================
 # LOGGING CONFIGURATION (for Wazuh monitoring)
 # ===========================================
+
+# Configuration des handlers selon le système d'exploitation
+def get_logging_handlers():
+    """Retourne les handlers de logging adaptés au système."""
+    handlers = {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    }
+    
+    # Syslog uniquement disponible sur Linux/Mac
+    if IS_LINUX:
+        handlers['syslog'] = {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': '/dev/log',
+            'formatter': 'wazuh',
+            'facility': 'LOG_LOCAL0',
+        }
+    elif IS_MAC:
+        handlers['syslog'] = {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': '/var/run/syslog',
+            'formatter': 'wazuh',
+            'facility': 'LOG_LOCAL0',
+        }
+    elif IS_WINDOWS:
+        # Sur Windows, utiliser un fichier de log à la place de syslog
+        LOG_DIR = BASE_DIR / 'logs'
+        LOG_DIR.mkdir(exist_ok=True)
+        handlers['file'] = {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / 'portfolio.log'),
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'simple',
+        }
+    
+    return handlers
+
+# Définir les handlers disponibles pour les loggers
+def get_logger_handlers():
+    """Retourne la liste des handlers à utiliser pour les loggers."""
+    if IS_WINDOWS:
+        return ['console', 'file']
+    else:
+        return ['console', 'syslog']
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -243,38 +302,25 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'syslog': {
-            'level': 'INFO',
-            'class': 'logging.handlers.SysLogHandler',
-            'address': '/dev/log',  # Pour Docker, utiliser 'localhost:514' si besoin
-            'formatter': 'wazuh',
-            'facility': 'LOG_LOCAL0',
-        },
-    },
+    'handlers': get_logging_handlers(),
     'loggers': {
         'django': {
-            'handlers': ['console', 'syslog'],
+            'handlers': get_logger_handlers(),
             'level': 'INFO',
             'propagate': True,
         },
         'authentication': {
-            'handlers': ['console', 'syslog'],
+            'handlers': get_logger_handlers(),
             'level': 'INFO',  # Changé de WARNING à INFO pour capturer les connexions
             'propagate': False,
         },
         'authentication.views': {
-            'handlers': ['console', 'syslog'],
+            'handlers': get_logger_handlers(),
             'level': 'INFO',  # Changé de WARNING à INFO
             'propagate': False,
         },
         'galleries': {
-            'handlers': ['console', 'syslog'],
+            'handlers': get_logger_handlers(),
             'level': 'INFO',
             'propagate': False,
         },
