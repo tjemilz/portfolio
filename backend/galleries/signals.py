@@ -32,18 +32,18 @@ def create_thumbnail(sender, instance, created, **kwargs):
             
             # Create thumbnail - multiple sizes for different use cases
             thumbnail_sizes = {
-                'thumbnail': (400, 400),  # For gallery grid
+                'thumbnail': (600, 600),  # For gallery grid
                 'medium': (800, 800),     # For lightbox preview
             }
             
-            # Generate the main thumbnail (400x400)
+            # Generate the main thumbnail (600x600)
             thumb_size = thumbnail_sizes['thumbnail']
             img_thumb = img.copy()
             img_thumb.thumbnail(thumb_size, PILImage.Resampling.LANCZOS)
             
             # Save thumbnail to BytesIO
             thumb_io = BytesIO()
-            img_thumb.save(thumb_io, format='JPEG', quality=85, optimize=True)
+            img_thumb.save(thumb_io, format='JPEG', quality=90, optimize=True)
             thumb_io.seek(0)
             
             # Generate filename

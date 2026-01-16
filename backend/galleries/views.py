@@ -582,19 +582,44 @@ def serve_thumbnail(request, gallery_slug, filename):
         if not gallery.can_access(user):
             return HttpResponse("Forbidden", status=403)
     
-    # Try to find thumbnail, fall back to original image
-    thumbnail_path = os.path.join(settings.MEDIA_ROOT, 'thumbnails', gallery_slug, filename)
-    
-    if not os.path.exists(thumbnail_path):
-        # Fall back to original image if thumbnail doesn't exist
+    # Find the image by its original filename in this gallery
+    try:
+        # More efficient query to find image by filename in this specific gallery
+        image = Image.objects.filter(
+            galleries=gallery,
+            image__icontains=filename
+        ).first()
+        
+        if not image:
+            # Try with exact filename match at the end of the path
+            image = Image.objects.filter(
+                galleries=gallery,
+                image__endswith=filename
+            ).first()
+        
+        if not image:
+            raise Http404("Image not found in this gallery")
+        
+        # Use thumbnail if available and exists
+        if image.thumbnail and hasattr(image.thumbnail, 'path'):
+            try:
+                thumbnail_path = image.thumbnail.path
+                if os.path.exists(thumbnail_path):
+                    content_type, _ = mimetypes.guess_type(thumbnail_path)
+                    if content_type is None:
+                        content_type = 'image/jpeg'
+                    
+                    response = FileResponse(open(thumbnail_path, 'rb'), content_type=content_type)
+                    response['Cache-Control'] = 'public, max-age=604800'  # Cache for 1 week
+                    response['Content-Disposition'] = f'inline; filename="thumb_{filename}"'
+                    return response
+            except (ValueError, OSError):
+                # Thumbnail file issue, fall back to original
+                pass
+        
+        # Fall back to original image if thumbnail doesn't exist or has issues
         return serve_image(request, gallery_slug, filename)
-    
-    content_type, _ = mimetypes.guess_type(filename)
-    if content_type is None:
-        content_type = 'application/octet-stream'
-    
-    response = FileResponse(open(thumbnail_path, 'rb'), content_type=content_type)
-    response['Cache-Control'] = 'public, max-age=604800'  # Cache for 1 week
-    response['Content-Disposition'] = f'inline; filename="{filename}"'
-    
-    return response
+        
+    except Exception:
+        # Final fall back to original image
+        return serve_image(request, gallery_slug, filename)

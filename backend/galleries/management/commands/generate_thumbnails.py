@@ -10,7 +10,7 @@ import os
 
 
 class Command(BaseCommand):
-    help = 'Generate thumbnails for existing images that don\'t have them'
+    help = 'Generate thumbnails for existing images (600x600 resolution for better quality)'
 
     def add_arguments(self, parser):
         parser.add_argument(

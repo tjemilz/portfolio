@@ -8,9 +8,9 @@
 - Rajouter les liens vers les réseaux sociaux
 - ✅ Page d'accueil : les photos sont sélectionnées aléatoirement dans la galerie bestof et pas best-of
 - ✅ Gérer les images dans les galeries (affichage et suppression)
-- Faire les tests pour les groupes et leurs privilèges
+- ✅ Faire les tests pour les groupes et leurs privilèges
 - Optimiser le site
-    - Regarder pour générer plusieurs fichiers (juste pour la gallerie ou pour l’affichage en full screen)
+    - ✅ Regarder pour générer plusieurs fichiers (juste pour la gallerie ou pour l'affichage en full screen) - Thumbnails optimisés 600x600 avec qualité 90%
     - Regarder pour ne générer les images que quand elles sont visibles (react-virtuoso ou react-window)
 - Accès aux photos si on connaît le nom exact (numéro d’identification) [ ie proteger la route (par exemple) https://paulatreides.fr/media/galleries/images/e02ce3ee5f4448a780eac512b15f7379.jpg]
 - Ajouter une option pour imprimer la photo (pour les proches)
