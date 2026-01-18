@@ -14,10 +14,11 @@ from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponse
 from django.conf import settings
 
-from .models import Gallery, Image, UserGroup
+from .models import Gallery, Image, UserGroup, PrintRequest, PrintRequestItem
 from .serializers import (
     GalleryListSerializer, GalleryDetailSerializer, GalleryCreateSerializer,
-    ImageSerializer, ImageListSerializer, UserGroupSerializer
+    ImageSerializer, ImageListSerializer, UserGroupSerializer,
+    PrintRequestSerializer, PrintRequestCreateSerializer
 )
 from .permissions import CanAccessGallery, CanUploadImage, CanDeleteImage, IsAdminOrReadOnly
 
@@ -623,3 +624,117 @@ def serve_thumbnail(request, gallery_slug, filename):
     except Exception:
         # Final fall back to original image
         return serve_image(request, gallery_slug, filename)
+
+
+# =====================================================
+# Print Request Views
+# =====================================================
+
+class PrintRequestViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing print requests.
+    
+    Users can:
+    - List their own print requests
+    - Create new print requests
+    - View details of their requests
+    
+    Admin can:
+    - View all print requests
+    - Update status and admin notes
+    - Delete requests
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """Filter requests based on user role."""
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            # Admin sees all requests
+            return PrintRequest.objects.prefetch_related(
+                'items__image',
+                'user'
+            ).all()
+        else:
+            # Users see only their own requests
+            return PrintRequest.objects.prefetch_related(
+                'items__image'
+            ).filter(user=user)
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PrintRequestCreateSerializer
+        return PrintRequestSerializer
+    
+    def create(self, request, *args, **kwargs):
+        """Create a new print request."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return with full details
+        output_serializer = PrintRequestSerializer(
+            serializer.instance,
+            context={'request': request}
+        )
+        return Response(
+            output_serializer.data,
+            status=status.HTTP_201_CREATED
+        )
+    
+    def update(self, request, *args, **kwargs):
+        """Update print request (admin only for status/admin_notes)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Seuls les administrateurs peuvent modifier les demandes.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+    
+    def partial_update(self, request, *args, **kwargs):
+        """Partial update (admin only)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Seuls les administrateurs peuvent modifier les demandes.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().partial_update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        """Delete print request."""
+        instance = self.get_object()
+        
+        # Users can only delete their own pending requests
+        if not (request.user.is_staff or request.user.is_superuser):
+            if instance.user != request.user:
+                return Response(
+                    {'detail': 'Vous ne pouvez supprimer que vos propres demandes.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            if instance.status != 'PENDING':
+                return Response(
+                    {'detail': 'Seules les demandes en attente peuvent être supprimées.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return super().destroy(request, *args, **kwargs)
+    
+    @action(detail=False, methods=['get'])
+    def my_requests(self, request):
+        """Get current user's print requests."""
+        requests = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer(requests, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def pending(self, request):
+        """Get pending print requests (admin view)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Permission refusée.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        pending_requests = self.get_queryset().filter(status='PENDING')
+        serializer = self.get_serializer(pending_requests, many=True)
+        return Response(serializer.data)

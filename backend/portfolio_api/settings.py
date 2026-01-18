@@ -72,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'portfolio_api.middleware_protect_media.ProtectMediaMiddleware',  # Protection désactivée
 ]
 
 ROOT_URLCONF = 'portfolio_api.urls'

@@ -123,6 +123,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const getToken = useCallback(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('access_token');
+  }, []);
+
   const value = {
     user,
     loading,
@@ -134,6 +139,7 @@ export function AuthProvider({ children }) {
     logout,
     checkAuth,
     refreshUser,
+    getToken,
   };
 
   return (
