@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -17,7 +18,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Logo & Description */}
           <div>
-            <h3 className="text-xl font-serif font-bold mb-4 text-white">Still24</h3>
+            <div className="mb-4">
+              <Image 
+                src="/Logo HD.png" 
+                alt="Still24 Logo" 
+                width={200} 
+                height={200}
+                className="h-16 w-auto brightness-0 invert"
+              />
+            </div>
             <p className="text-slate-grey text-sm leading-relaxed">
               Photographe passionné capturant les moments uniques de la vie à travers un regard artistique.
             </p>

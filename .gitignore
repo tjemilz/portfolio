@@ -41,6 +41,7 @@ yarn-error.log*
 # Backend Django
 backend/.env
 backend/venv/
+venv/
 backend/media/
 backend/logs/
 backend/staticfiles/
@@ -51,9 +52,25 @@ backend/staticfiles/
 *.so
 db.sqlite3
 backend/db.sqlite3
+*.sqlite3
 .coverage
 .pytest_cache/
 .mypy_cache/
+
+# Test files
+*test*.py
+*test*.ps1
+*test*.sh
+TESTS_*.md
+
+# Temporary documentation
+Corrections.md
+NouvelleDA.md
+PROJECT_ROADMAP.md
+
+# Docker volumes and logs
+logs/
+backups/
 
 # Frontend
 frontend/venv/

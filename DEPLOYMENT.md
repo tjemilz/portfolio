@@ -134,7 +134,7 @@ SECRET_KEY=votre-cle-secrete-generee
 ALLOWED_HOSTS=localhost,still24.fr
 CORS_ALLOWED_ORIGINS=https://still24.fr,https://www.still24.fr
 JWT_ACCESS_TOKEN_LIFETIME=60
-JWT_REFRESH_TOKEN_LIFETIME=1440
+JWT_REFRESH_TOKEN_LIFETIME=360
 SECURE_SSL_REDIRECT=False
 SESSION_COOKIE_SECURE=False
 CSRF_COOKIE_SECURE=False
@@ -180,7 +180,7 @@ Le système envoie automatiquement des notifications via **ntfy** à chaque conn
 5. **Variables d'environnement** :
 ```env
 NTFY_ENABLED=True
-NTFY_SERVER_URL=https://ntfy.still24.fr
+NTFY_SERVER_URL=https://ntfy.paulatreides.fr
 NTFY_TOPIC_SUCCESS=portfolio-login-success
 NTFY_TOPIC_FAILED=portfolio-login-failed
 # Si tu as configuré l'auth sur ton serveur ntfy :

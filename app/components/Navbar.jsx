@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../providers/AuthProvider';
@@ -145,8 +146,15 @@ const Navbar = () => {
     >
       {/* En-tête de navigation avec logo et bouton menu */}
       <div className="flex w-full md:w-auto justify-between items-center">
-        <Link href="/" className="text-xl font-serif font-bold text-space-indigo hover:text-accent transition-colors tracking-tight">
-          Still24
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <Image 
+            src="/Logo HD.png" 
+            alt="Still24 Logo" 
+            width={200} 
+            height={200}
+            className="h-16 w-auto"
+            priority
+          />
         </Link>
         
         {/* Bouton menu hamburger - visible uniquement sur mobile */}
