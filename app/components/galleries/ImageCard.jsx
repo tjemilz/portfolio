@@ -24,10 +24,6 @@ export default function ImageCard({
   // Get full resolution image URL for lightbox/download
   const getFullImageUrl = () => {
     if (image.image_url) {
-      // If it's a relative URL starting with /media/, make it absolute
-      if (image.image_url.startsWith('/media/')) {
-        return `${window.location.origin}${image.image_url}`;
-      }
       return image.image_url;
     }
     if (image.filename && gallerySlug) {
@@ -41,16 +37,9 @@ export default function ImageCard({
   const getImageUrl = () => {
     // Use thumbnail for gallery grid display
     if (image.thumbnail_url) {
-      // If it's a relative URL starting with /media/, make it absolute for Next.js Image
-      if (image.thumbnail_url.startsWith('/media/')) {
-        return `${window.location.origin}${image.thumbnail_url}`;
-      }
       return image.thumbnail_url;
     }
     if (image.thumbnail) {
-      if (image.thumbnail.startsWith('/media/')) {
-        return `${window.location.origin}${image.thumbnail}`;
-      }
       return image.thumbnail;
     }
     if (image.filename && gallerySlug) {
@@ -159,8 +148,7 @@ export default function ImageCard({
         priority={priority}
         loading={priority ? 'eager' : 'lazy'}
         quality={85}
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
+        unoptimized={imageUrl.startsWith('/media/') || imageUrl.includes('/media/')}
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
       />

@@ -17,18 +17,26 @@ export default function Lightbox({
   allowDownload = true
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [showFullRes, setShowFullRes] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
   const currentImage = images[currentIndex];
 
+  // Get thumbnail URL for quick preview
+  const getThumbnailUrl = () => {
+    if (currentImage.thumbnail_url) {
+      return currentImage.thumbnail_url;
+    }
+    if (currentImage.thumbnail) {
+      return currentImage.thumbnail;
+    }
+    return null;
+  };
+
   // Get full resolution image URL
   const getImageUrl = () => {
     if (currentImage.image_url) {
-      // Convert relative URLs to absolute for display
-      if (currentImage.image_url.startsWith('/media/')) {
-        return `${window.location.origin}${currentImage.image_url}`;
-      }
       return currentImage.image_url;
     }
     if (currentImage.filename && gallerySlug) {
@@ -38,7 +46,14 @@ export default function Lightbox({
     return currentImage.image || currentImage.src || '';
   };
 
+  const thumbnailUrl = getThumbnailUrl();
   const imageUrl = getImageUrl();
+
+  // Reset loading state when image changes
+  useEffect(() => {
+    setIsLoading(true);
+    setShowFullRes(false);
+  }, [currentIndex]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback((e) => {
@@ -70,17 +85,10 @@ export default function Lightbox({
     const preloadImage = (index) => {
       if (index >= 0 && index < images.length) {
         const img = new window.Image();
-        let preloadUrl = images[index].image_url;
-        
-        // Convert relative URLs to absolute
-        if (preloadUrl && preloadUrl.startsWith('/media/')) {
-          preloadUrl = `${window.location.origin}${preloadUrl}`;
-        } else if (!preloadUrl && images[index].filename && gallerySlug) {
-          preloadUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`;
-        } else if (!preloadUrl) {
-          preloadUrl = images[index].image || images[index].src;
-        }
-        
+        const preloadUrl = images[index].image_url || 
+          (images[index].filename && gallerySlug 
+            ? `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`
+            : images[index].image || images[index].src);
         if (preloadUrl) img.src = preloadUrl;
       }
     };
@@ -202,22 +210,43 @@ export default function Lightbox({
         onTouchEnd={onTouchEnd}
       >
         {/* Loading indicator */}
-        {isLoading && (
+        {isLoading && !showFullRes && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-10 h-10 border-2 border-white/10 border-t-white/80 rounded-full animate-spin" />
           </div>
         )}
 
-        {/* Main image */}
-        <Image
-          src={imageUrl}
-          alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
-          fill
-          className="object-contain"
-          sizes="100vw"
-          priority
-          onLoad={() => setIsLoading(false)}
-        />
+        {/* Thumbnail (quick preview) */}
+        {thumbnailUrl && !showFullRes && (
+          <Image
+            src={thumbnailUrl}
+            alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
+            fill
+            className="object-contain blur-sm"
+            sizes="100vw"
+            priority
+            unoptimized={thumbnailUrl.startsWith('/media/') || thumbnailUrl.includes('/media/')}
+            onLoad={() => {
+              setIsLoading(false);
+              // Start loading full resolution after thumbnail is displayed
+              setShowFullRes(true);
+            }}
+          />
+        )}
+
+        {/* Main image (full resolution) */}
+        {(showFullRes || !thumbnailUrl) && (
+          <Image
+            src={imageUrl}
+            alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            priority
+            unoptimized={imageUrl.startsWith('/media/') || imageUrl.includes('/media/')}
+            onLoad={() => setIsLoading(false)}
+          />
+        )}
       </div>
 
       {/* Image counter */}
