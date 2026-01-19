@@ -40,18 +40,14 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['width', 'height', 'file_size', 'uploaded_at']
     
     def get_image_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
             return obj.image.url
         return None
     
     def get_thumbnail_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.thumbnail:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return None
 
@@ -67,18 +63,14 @@ class ImageListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image_url', 'thumbnail_url', 'width', 'height', 'is_featured', 'galleries']
     
     def get_image_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
             return obj.image.url
         return None
     
     def get_thumbnail_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.thumbnail:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return None
 
@@ -97,17 +89,12 @@ class GalleryListSerializer(serializers.ModelSerializer):
         ]
     
     def get_cover_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.cover_image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.cover_image.url)
             return obj.cover_image.url
         # Return first image as cover if no cover set
         first_image = obj.images.first()
         if first_image and first_image.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(first_image.image.url)
             return first_image.image.url
         return None
 
@@ -132,10 +119,8 @@ class GalleryDetailSerializer(serializers.ModelSerializer):
         ]
     
     def get_cover_url(self, obj):
+        """Return relative URL - nginx serves /media/ correctly."""
         if obj.cover_image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.cover_image.url)
             return obj.cover_image.url
         return None
 
@@ -234,11 +219,11 @@ class PrintRequestItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']
     
     def get_image_thumbnail(self, obj):
-        request = self.context.get('request')
-        if obj.image.thumbnail and request:
-            return request.build_absolute_uri(obj.image.thumbnail.url)
-        elif obj.image.image and request:
-            return request.build_absolute_uri(obj.image.image.url)
+        """Return relative URL - nginx serves /media/ correctly."""
+        if obj.image.thumbnail:
+            return obj.image.thumbnail.url
+        elif obj.image.image:
+            return obj.image.image.url
         return None
     
     def validate(self, data):
