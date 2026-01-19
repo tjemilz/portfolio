@@ -70,8 +70,11 @@ class ImageListSerializer(serializers.ModelSerializer):
     
     def get_thumbnail_url(self, obj):
         """Return relative URL - nginx serves /media/ correctly."""
-        if obj.thumbnail:
-            return obj.thumbnail.url
+        try:
+            if obj.thumbnail and obj.thumbnail.name:
+                return obj.thumbnail.url
+        except (ValueError, AttributeError):
+            pass
         return None
 
 
@@ -220,10 +223,16 @@ class PrintRequestItemSerializer(serializers.ModelSerializer):
     
     def get_image_thumbnail(self, obj):
         """Return relative URL - nginx serves /media/ correctly."""
-        if obj.image.thumbnail:
-            return obj.image.thumbnail.url
-        elif obj.image.image:
-            return obj.image.image.url
+        try:
+            if obj.image.thumbnail and obj.image.thumbnail.name:
+                return obj.image.thumbnail.url
+            elif obj.image.image and obj.image.image.name:
+                return obj.image.image.url
+        except (ValueError, AttributeError):
+            pass
+        return None
+        except (ValueError, AttributeError):
+            pass
         return None
     
     def validate(self, data):
