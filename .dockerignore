@@ -35,7 +35,7 @@ Thumbs.db
 .git/
 .gitignore
 
-# Backend files
+# Backend files (exclude entire backend directory)
 backend/
 
 # Logs
@@ -45,3 +45,12 @@ logs/
 # Documentation
 *.md
 !README.md
+
+# Migration guides
+MIGRATION_GUIDE.md
+DEPLOYMENT.md
+WAZUH_SETUP.md
+
+# Docker
+docker-compose.yml
+Dockerfile
