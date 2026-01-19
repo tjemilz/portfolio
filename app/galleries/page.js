@@ -17,14 +17,22 @@ function GalleryCard({ gallery, index }) {
         {/* Image de couverture */}
         <div className={`relative ${index % 2 === 0 ? 'aspect-[4/5]' : 'aspect-[3/4]'} bg-slate-grey/10 overflow-hidden`}>
           {gallery.cover_url ? (
-            <Image
-              src={gallery.cover_url}
-              alt={gallery.name}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover image-hover"
-              unoptimized={gallery.cover_url.startsWith('/media/') || gallery.cover_url.includes('/media/')}
-            />
+            (gallery.cover_url.startsWith('/media/') || gallery.cover_url.includes('/media/')) ? (
+              <img
+                src={gallery.cover_url}
+                alt={gallery.name}
+                className="absolute inset-0 w-full h-full object-cover image-hover"
+                loading="lazy"
+              />
+            ) : (
+              <Image
+                src={gallery.cover_url}
+                alt={gallery.name}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover image-hover"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
               <svg className="w-16 h-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
