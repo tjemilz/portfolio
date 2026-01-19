@@ -272,9 +272,18 @@ class ImageViewSet(viewsets.ModelViewSet):
         
         # Handle gallery_ids from request if provided
         if 'gallery_ids' in self.request.data:
-            gallery_ids = self.request.data.getlist('gallery_ids', [])
+            # Handle both QueryDict (form data) and dict (JSON)
+            if hasattr(self.request.data, 'getlist'):
+                gallery_ids = self.request.data.getlist('gallery_ids', [])
+            else:
+                gallery_ids = self.request.data.get('gallery_ids', [])
+            
+            # Ensure it's a list
             if isinstance(gallery_ids, str):
                 gallery_ids = [gallery_ids]
+            elif not isinstance(gallery_ids, list):
+                gallery_ids = [gallery_ids] if gallery_ids else []
+            
             galleries = Gallery.objects.filter(id__in=gallery_ids)
             instance.galleries.set(galleries)
     
