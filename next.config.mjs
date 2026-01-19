@@ -8,6 +8,11 @@ const nextConfig = {
         pathname: '/media/**',
       },
       {
+        protocol: 'https',
+        hostname: 'paulatreides.fr',
+        pathname: '/media/**',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '8000',

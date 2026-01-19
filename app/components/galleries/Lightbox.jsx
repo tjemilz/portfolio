@@ -25,6 +25,10 @@ export default function Lightbox({
   // Get full resolution image URL
   const getImageUrl = () => {
     if (currentImage.image_url) {
+      // Convert relative URLs to absolute for display
+      if (currentImage.image_url.startsWith('/media/')) {
+        return `${window.location.origin}${currentImage.image_url}`;
+      }
       return currentImage.image_url;
     }
     if (currentImage.filename && gallerySlug) {
@@ -66,10 +70,17 @@ export default function Lightbox({
     const preloadImage = (index) => {
       if (index >= 0 && index < images.length) {
         const img = new window.Image();
-        const preloadUrl = images[index].image_url || 
-          (images[index].filename && gallerySlug 
-            ? `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`
-            : images[index].image || images[index].src);
+        let preloadUrl = images[index].image_url;
+        
+        // Convert relative URLs to absolute
+        if (preloadUrl && preloadUrl.startsWith('/media/')) {
+          preloadUrl = `${window.location.origin}${preloadUrl}`;
+        } else if (!preloadUrl && images[index].filename && gallerySlug) {
+          preloadUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`;
+        } else if (!preloadUrl) {
+          preloadUrl = images[index].image || images[index].src;
+        }
+        
         if (preloadUrl) img.src = preloadUrl;
       }
     };

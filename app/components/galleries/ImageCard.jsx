@@ -24,6 +24,10 @@ export default function ImageCard({
   // Get full resolution image URL for lightbox/download
   const getFullImageUrl = () => {
     if (image.image_url) {
+      // If it's a relative URL starting with /media/, make it absolute
+      if (image.image_url.startsWith('/media/')) {
+        return `${window.location.origin}${image.image_url}`;
+      }
       return image.image_url;
     }
     if (image.filename && gallerySlug) {
@@ -37,9 +41,16 @@ export default function ImageCard({
   const getImageUrl = () => {
     // Use thumbnail for gallery grid display
     if (image.thumbnail_url) {
+      // If it's a relative URL starting with /media/, make it absolute for Next.js Image
+      if (image.thumbnail_url.startsWith('/media/')) {
+        return `${window.location.origin}${image.thumbnail_url}`;
+      }
       return image.thumbnail_url;
     }
     if (image.thumbnail) {
+      if (image.thumbnail.startsWith('/media/')) {
+        return `${window.location.origin}${image.thumbnail}`;
+      }
       return image.thumbnail;
     }
     if (image.filename && gallerySlug) {
