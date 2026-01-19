@@ -231,9 +231,6 @@ class PrintRequestItemSerializer(serializers.ModelSerializer):
         except (ValueError, AttributeError):
             pass
         return None
-        except (ValueError, AttributeError):
-            pass
-        return None
     
     def validate(self, data):
         """Validate that custom_size is provided when print_size is OTHER."""
