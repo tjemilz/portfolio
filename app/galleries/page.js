@@ -23,6 +23,7 @@ function GalleryCard({ gallery, index }) {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover image-hover"
+              unoptimized={gallery.cover_url.startsWith('/media/') || gallery.cover_url.includes('/media/')}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
