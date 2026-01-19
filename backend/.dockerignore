@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Media files (mounted as volume)
+media/
+
+# Logs (mounted as volume)
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation temporaire
+TESTS_*.md
+*test*.py
+*test*.ps1
+
+# Environment files
+.env
+.env.*
