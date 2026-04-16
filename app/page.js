@@ -150,8 +150,8 @@ export default function Home() {
 
           <Link 
             href="/galleries"
-            className={`group inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:text-white transition-all duration-300 ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: '600ms' }}
+            className={`group inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:!text-white hover:border-space-indigo transition-all duration-100 ${showCapture ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '00ms' }}
           >
             Explorer les galeries
             <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -320,7 +320,7 @@ export default function Home() {
               <Link href="/galleries" className="px-8 py-4 bg-space-indigo text-white font-medium rounded-full hover:bg-shadow-grey transition-colors">
                 Parcourir les galeries
               </Link>
-              <Link href="/bio" className="px-8 py-4 border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:text-white transition-colors">
+              <Link href="/bio" className="px-8 py-4 border-2 border-space-indigo text-space-indigo font-medium rounded-full hover:bg-space-indigo hover:!text-white hover:border-space-indigo transition-colors duration-100">
                 En savoir plus sur moi
               </Link>
             </div>

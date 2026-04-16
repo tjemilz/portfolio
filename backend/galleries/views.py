@@ -3,11 +3,8 @@ Views for galleries app.
 """
 
 import os
-import io
 import mimetypes
 import zipfile
-from PIL import Image as PILImage
-from PIL.ExifTags import TAGS
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -16,13 +13,12 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponse
 from django.conf import settings
-from django.core.files.base import ContentFile
-from datetime import datetime
 
-from .models import Gallery, Image, UserGroup
+from .models import Gallery, Image, UserGroup, PrintRequest, PrintRequestItem
 from .serializers import (
     GalleryListSerializer, GalleryDetailSerializer, GalleryCreateSerializer,
-    ImageSerializer, ImageListSerializer, UserGroupSerializer
+    ImageSerializer, ImageListSerializer, UserGroupSerializer,
+    PrintRequestSerializer, PrintRequestCreateSerializer
 )
 from .permissions import CanAccessGallery, CanUploadImage, CanDeleteImage, IsAdminOrReadOnly
 
@@ -30,85 +26,6 @@ from .permissions import CanAccessGallery, CanUploadImage, CanDeleteImage, IsAdm
 # Constantes pour l'upload
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
-THUMBNAIL_SIZE = (400, 400)
-
-
-def extract_exif_data(image_file):
-    """Extrait les données EXIF d'une image."""
-    exif_data = {}
-    try:
-        img = PILImage.open(image_file)
-        exif = img._getexif()
-        if exif:
-            for tag_id, value in exif.items():
-                tag = TAGS.get(tag_id, tag_id)
-                
-                if tag == 'Make':
-                    exif_data['camera_make'] = str(value)
-                elif tag == 'Model':
-                    exif_data['camera'] = str(value)
-                elif tag == 'LensModel':
-                    exif_data['lens'] = str(value)
-                elif tag == 'FocalLength':
-                    if hasattr(value, 'numerator'):
-                        exif_data['focal_length'] = f"{value.numerator / value.denominator}mm"
-                    else:
-                        exif_data['focal_length'] = f"{value}mm"
-                elif tag == 'FNumber':
-                    if hasattr(value, 'numerator'):
-                        exif_data['aperture'] = f"f/{value.numerator / value.denominator}"
-                    else:
-                        exif_data['aperture'] = f"f/{value}"
-                elif tag == 'ExposureTime':
-                    if hasattr(value, 'numerator') and hasattr(value, 'denominator'):
-                        if value.numerator < value.denominator:
-                            exif_data['shutter_speed'] = f"{value.numerator}/{value.denominator}s"
-                        else:
-                            exif_data['shutter_speed'] = f"{value.numerator / value.denominator}s"
-                    else:
-                        exif_data['shutter_speed'] = f"{value}s"
-                elif tag == 'ISOSpeedRatings':
-                    exif_data['iso'] = int(value) if isinstance(value, (int, float)) else int(value[0]) if isinstance(value, tuple) else None
-                elif tag == 'DateTimeOriginal':
-                    try:
-                        exif_data['taken_at'] = datetime.strptime(str(value), '%Y:%m:%d %H:%M:%S')
-                    except:
-                        pass
-        img.close()
-    except Exception as e:
-        print(f"Error extracting EXIF: {e}")
-    
-    return exif_data
-
-
-def generate_thumbnail(image_file, max_size=THUMBNAIL_SIZE):
-    """Génère une miniature de l'image."""
-    try:
-        img = PILImage.open(image_file)
-        
-        # Convertir en RGB si nécessaire
-        if img.mode in ('RGBA', 'P'):
-            img = img.convert('RGB')
-        
-        # Préserver l'orientation EXIF
-        try:
-            from PIL import ImageOps
-            img = ImageOps.exif_transpose(img)
-        except:
-            pass
-        
-        # Créer la miniature
-        img.thumbnail(max_size, PILImage.Resampling.LANCZOS)
-        
-        # Sauvegarder en mémoire
-        thumb_io = io.BytesIO()
-        img.save(thumb_io, format='JPEG', quality=85, optimize=True)
-        thumb_io.seek(0)
-        
-        return thumb_io
-    except Exception as e:
-        print(f"Error generating thumbnail: {e}")
-        return None
 
 
 class GalleryViewSet(viewsets.ModelViewSet):
@@ -255,48 +172,22 @@ class GalleryViewSet(viewsets.ModelViewSet):
                 continue
             
             try:
-                # Extraire les données EXIF
-                file.seek(0)
-                exif_data = extract_exif_data(file)
-                file.seek(0)
-                
-                # Générer la miniature
-                thumbnail_io = generate_thumbnail(file)
-                file.seek(0)
-                
-                # Obtenir les dimensions
-                img = PILImage.open(file)
-                width, height = img.size
-                img.close()
-                file.seek(0)
-                
-                # Créer l'objet Image
+                # Créer l'objet Image avec les données de base
                 image = Image(
                     image=file,
                     title=os.path.splitext(file.name)[0],
-                    width=width,
-                    height=height,
                     file_size=file.size,
-                    camera=exif_data.get('camera', ''),
-                    lens=exif_data.get('lens', ''),
-                    focal_length=exif_data.get('focal_length', ''),
-                    aperture=exif_data.get('aperture', ''),
-                    shutter_speed=exif_data.get('shutter_speed', ''),
-                    iso=exif_data.get('iso'),
-                    taken_at=exif_data.get('taken_at'),
                     uploaded_by=request.user
                 )
                 
-                # Sauvegarder l'image d'abord
+                # Sauvegarder l'image - les signaux vont automatiquement :
+                # 1. Extraire les données EXIF
+                # 2. Générer le thumbnail 
+                # 3. Calculer les dimensions
                 image.save()
                 
                 # Associer à la galerie (ManyToMany)
                 image.galleries.add(gallery)
-                
-                # Ajouter la miniature si générée
-                if thumbnail_io:
-                    thumb_filename = f"thumb_{image.pk}.jpg"
-                    image.thumbnail.save(thumb_filename, ContentFile(thumbnail_io.read()), save=True)
                 
                 uploaded_images.append(ImageSerializer(image, context={'request': request}).data)
                 
@@ -692,19 +583,158 @@ def serve_thumbnail(request, gallery_slug, filename):
         if not gallery.can_access(user):
             return HttpResponse("Forbidden", status=403)
     
-    # Try to find thumbnail, fall back to original image
-    thumbnail_path = os.path.join(settings.MEDIA_ROOT, 'thumbnails', gallery_slug, filename)
-    
-    if not os.path.exists(thumbnail_path):
-        # Fall back to original image if thumbnail doesn't exist
+    # Find the image by its original filename in this gallery
+    try:
+        # More efficient query to find image by filename in this specific gallery
+        image = Image.objects.filter(
+            galleries=gallery,
+            image__icontains=filename
+        ).first()
+        
+        if not image:
+            # Try with exact filename match at the end of the path
+            image = Image.objects.filter(
+                galleries=gallery,
+                image__endswith=filename
+            ).first()
+        
+        if not image:
+            raise Http404("Image not found in this gallery")
+        
+        # Use thumbnail if available and exists
+        if image.thumbnail and hasattr(image.thumbnail, 'path'):
+            try:
+                thumbnail_path = image.thumbnail.path
+                if os.path.exists(thumbnail_path):
+                    content_type, _ = mimetypes.guess_type(thumbnail_path)
+                    if content_type is None:
+                        content_type = 'image/jpeg'
+                    
+                    response = FileResponse(open(thumbnail_path, 'rb'), content_type=content_type)
+                    response['Cache-Control'] = 'public, max-age=604800'  # Cache for 1 week
+                    response['Content-Disposition'] = f'inline; filename="thumb_{filename}"'
+                    return response
+            except (ValueError, OSError):
+                # Thumbnail file issue, fall back to original
+                pass
+        
+        # Fall back to original image if thumbnail doesn't exist or has issues
         return serve_image(request, gallery_slug, filename)
+        
+    except Exception:
+        # Final fall back to original image
+        return serve_image(request, gallery_slug, filename)
+
+
+# =====================================================
+# Print Request Views
+# =====================================================
+
+class PrintRequestViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing print requests.
     
-    content_type, _ = mimetypes.guess_type(filename)
-    if content_type is None:
-        content_type = 'application/octet-stream'
+    Users can:
+    - List their own print requests
+    - Create new print requests
+    - View details of their requests
     
-    response = FileResponse(open(thumbnail_path, 'rb'), content_type=content_type)
-    response['Cache-Control'] = 'public, max-age=604800'  # Cache for 1 week
-    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    Admin can:
+    - View all print requests
+    - Update status and admin notes
+    - Delete requests
+    """
+    permission_classes = [IsAuthenticated]
     
-    return response
+    def get_queryset(self):
+        """Filter requests based on user role."""
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            # Admin sees all requests
+            return PrintRequest.objects.prefetch_related(
+                'items__image',
+                'user'
+            ).all()
+        else:
+            # Users see only their own requests
+            return PrintRequest.objects.prefetch_related(
+                'items__image'
+            ).filter(user=user)
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PrintRequestCreateSerializer
+        return PrintRequestSerializer
+    
+    def create(self, request, *args, **kwargs):
+        """Create a new print request."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return with full details
+        output_serializer = PrintRequestSerializer(
+            serializer.instance,
+            context={'request': request}
+        )
+        return Response(
+            output_serializer.data,
+            status=status.HTTP_201_CREATED
+        )
+    
+    def update(self, request, *args, **kwargs):
+        """Update print request (admin only for status/admin_notes)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Seuls les administrateurs peuvent modifier les demandes.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+    
+    def partial_update(self, request, *args, **kwargs):
+        """Partial update (admin only)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Seuls les administrateurs peuvent modifier les demandes.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().partial_update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        """Delete print request."""
+        instance = self.get_object()
+        
+        # Users can only delete their own pending requests
+        if not (request.user.is_staff or request.user.is_superuser):
+            if instance.user != request.user:
+                return Response(
+                    {'detail': 'Vous ne pouvez supprimer que vos propres demandes.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            if instance.status != 'PENDING':
+                return Response(
+                    {'detail': 'Seules les demandes en attente peuvent être supprimées.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return super().destroy(request, *args, **kwargs)
+    
+    @action(detail=False, methods=['get'])
+    def my_requests(self, request):
+        """Get current user's print requests."""
+        requests = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer(requests, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def pending(self, request):
+        """Get pending print requests (admin view)."""
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {'detail': 'Permission refusée.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        pending_requests = self.get_queryset().filter(status='PENDING')
+        serializer = self.get_serializer(pending_requests, many=True)
+        return Response(serializer.data)

@@ -3,7 +3,7 @@ Serializers for galleries app.
 """
 
 from rest_framework import serializers
-from .models import UserGroup, Gallery, Image
+from .models import UserGroup, Gallery, Image, PrintRequest, PrintRequestItem, PrintSize
 
 
 class GalleryMinimalSerializer(serializers.ModelSerializer):
@@ -209,3 +209,97 @@ class UserGroupSerializer(serializers.ModelSerializer):
             instance.members.set(members)
         
         return instance
+
+
+# =====================================================
+# Print Request Serializers
+# =====================================================
+
+class PrintRequestItemSerializer(serializers.ModelSerializer):
+    """Serializer for individual print items."""
+    image_title = serializers.CharField(source='image.title', read_only=True)
+    image_thumbnail = serializers.SerializerMethodField()
+    unit_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    estimated_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    print_size_display = serializers.CharField(source='get_print_size_display', read_only=True)
+    
+    class Meta:
+        model = PrintRequestItem
+        fields = [
+            'id', 'image', 'image_title', 'image_thumbnail',
+            'print_size', 'print_size_display', 'quantity',
+            'custom_size', 'unit_price', 'estimated_price',
+            'created_at'
+        ]
+        read_only_fields = ['created_at']
+    
+    def get_image_thumbnail(self, obj):
+        request = self.context.get('request')
+        if obj.image.thumbnail and request:
+            return request.build_absolute_uri(obj.image.thumbnail.url)
+        elif obj.image.image and request:
+            return request.build_absolute_uri(obj.image.image.url)
+        return None
+    
+    def validate(self, data):
+        """Validate that custom_size is provided when print_size is OTHER."""
+        if data.get('print_size') == PrintSize.OTHER and not data.get('custom_size'):
+            raise serializers.ValidationError({
+                'custom_size': 'Le format personnalisé doit être spécifié pour l\'option "Autre".'
+            })
+        return data
+
+
+class PrintRequestSerializer(serializers.ModelSerializer):
+    """Serializer for print requests with items."""
+    items = PrintRequestItemSerializer(many=True, read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    total_items = serializers.IntegerField(read_only=True)
+    estimated_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    
+    class Meta:
+        model = PrintRequest
+        fields = [
+            'id', 'user', 'user_username', 'user_email',
+            'status', 'status_display', 'notes', 'admin_notes',
+            'items', 'total_items', 'estimated_total',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['user', 'created_at', 'updated_at']
+
+
+class PrintRequestCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating print requests."""
+    items = PrintRequestItemSerializer(many=True)
+    
+    class Meta:
+        model = PrintRequest
+        fields = ['notes', 'items']
+    
+    def create(self, validated_data):
+        """Create a print request with items."""
+        items_data = validated_data.pop('items')
+        user = self.context['request'].user
+        
+        # Create the print request
+        print_request = PrintRequest.objects.create(
+            user=user,
+            **validated_data
+        )
+        
+        # Create the items
+        for item_data in items_data:
+            PrintRequestItem.objects.create(
+                request=print_request,
+                **item_data
+            )
+        
+        return print_request
+    
+    def validate_items(self, items):
+        """Validate that at least one item is provided."""
+        if not items:
+            raise serializers.ValidationError("Au moins un article doit être sélectionné.")
+        return items

@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+.vscode/settings.json
 
 # debug
 npm-debug.log*
@@ -37,15 +38,39 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# Backend
+# Backend Django
 backend/.env
 backend/venv/
+venv/
 backend/media/
+backend/logs/
+backend/staticfiles/
 **/__pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.so
 db.sqlite3
 backend/db.sqlite3
+*.sqlite3
+.coverage
+.pytest_cache/
+.mypy_cache/
+
+# Test files
+*test*.py
+*test*.ps1
+*test*.sh
+TESTS_*.md
+
+# Temporary documentation
+Corrections.md
+NouvelleDA.md
+PROJECT_ROADMAP.md
+
+# Docker volumes and logs
+logs/
+backups/
 
 # Frontend
 frontend/venv/
@@ -56,3 +81,19 @@ frontend/venv/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

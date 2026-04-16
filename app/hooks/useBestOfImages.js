@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { galleriesApi } from '../lib/api';
 
 /**
- * Hook to fetch images from the "bestof" gallery
+ * Hook to fetch images from the "best-of" gallery
  */
 export function useBestOfImages() {
   const [images, setImages] = useState([]);
@@ -16,10 +16,10 @@ export function useBestOfImages() {
     setError(null);
     
     try {
-      const data = await galleriesApi.getImages('bestof');
+      const data = await galleriesApi.getImages('best-of');
       setImages(data);
     } catch (err) {
-      console.error('Error fetching bestof images:', err);
+      console.error('Error fetching best-of images:', err);
       setError(err.message);
     } finally {
       setLoading(false);

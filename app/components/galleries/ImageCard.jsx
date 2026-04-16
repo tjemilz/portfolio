@@ -21,24 +21,7 @@ export default function ImageCard({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  // Build image URL - support both API served images and direct paths
-  const getImageUrl = () => {
-    if (image.thumbnail) {
-      return image.thumbnail;
-    }
-    if (image.image_url) {
-      return image.image_url;
-    }
-    if (image.filename && gallerySlug) {
-      // Use API endpoint for secure image serving
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      return `${apiUrl}/api/galleries/${gallerySlug}/thumbnails/${image.filename}/`;
-    }
-    // Fallback to direct image path
-    return image.image || image.src || '';
-  };
-
-  // Get full resolution image URL for download
+  // Get full resolution image URL for lightbox/download
   const getFullImageUrl = () => {
     if (image.image_url) {
       return image.image_url;
@@ -48,6 +31,24 @@ export default function ImageCard({
       return `${apiUrl}/api/galleries/${gallerySlug}/images/${image.filename}/`;
     }
     return image.image || image.src || '';
+  };
+
+  // Build image URL - support both API served images and direct paths
+  const getImageUrl = () => {
+    // Use thumbnail for gallery grid display
+    if (image.thumbnail_url) {
+      return image.thumbnail_url;
+    }
+    if (image.thumbnail) {
+      return image.thumbnail;
+    }
+    if (image.filename && gallerySlug) {
+      // Use API endpoint for secure image serving (fallback)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      return `${apiUrl}/api/galleries/${gallerySlug}/thumbnails/${image.filename}/`;
+    }
+    // Fallback to full image
+    return getFullImageUrl();
   };
 
   // Download handler
@@ -145,6 +146,10 @@ export default function ImageCard({
           ${isLoaded ? 'opacity-100' : 'opacity-0'}
         `}
         priority={priority}
+        loading={priority ? 'eager' : 'lazy'}
+        quality={85}
+        placeholder="blur"
+        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
       />

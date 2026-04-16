@@ -9,7 +9,8 @@ const AdminDashboardPage = () => {
     galleries: 0,
     images: 0,
     users: 0,
-    privateGalleries: 0
+    privateGalleries: 0,
+    pendingPrintRequests: 0
   });
   const [loading, setLoading] = useState(true);
   const [recentActivity, setRecentActivity] = useState([]);
@@ -47,11 +48,24 @@ const AdminDashboardPage = () => {
       const totalImages = galleries.reduce((acc, g) => acc + (g.image_count || 0), 0);
       const privateGalleries = galleries.filter(g => g.visibility === 'PRIVATE').length;
 
+      // Fetch print requests count
+      let pendingPrintRequestsCount = 0;
+      try {
+        const printRequestsRes = await fetch(buildApiUrl('/api/galleries/print-requests/pending/'), { headers });
+        if (printRequestsRes.ok) {
+          const printRequestsData = await printRequestsRes.json();
+          pendingPrintRequestsCount = printRequestsData.length || 0;
+        }
+      } catch (e) {
+        console.log('Print requests endpoint not available');
+      }
+
       setStats({
         galleries: galleries.length,
         images: totalImages,
         users: usersCount,
-        privateGalleries: privateGalleries
+        privateGalleries: privateGalleries,
+        pendingPrintRequests: pendingPrintRequestsCount
       });
 
       setLoading(false);
@@ -105,6 +119,17 @@ const AdminDashboardPage = () => {
       ),
       color: 'bg-orange-500',
       link: '/admin/galleries?filter=private'
+    },
+    {
+      name: 'Demandes d\'impression',
+      value: stats.pendingPrintRequests,
+      icon: (
+        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+      ),
+      color: 'bg-pink-500',
+      link: '/admin/print-requests'
     }
   ];
 
@@ -117,16 +142,17 @@ const AdminDashboardPage = () => {
 
       {/* Stats Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="bg-white rounded-xl shadow p-6 animate-pulse">
               <div className="h-10 w-10 bg-slate-grey/20 rounded-lg mb-4"></div>
               <div className="h-6 bg-slate-grey/20 rounded w-1/2 mb-2"></div>
               <div className="h-8 bg-slate-grey/20 rounded w-1/3"></div>
             </div>
-          ))}n        </div>
+          ))}
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {statCards.map((card) => (
             <a
               key={card.name}
@@ -174,6 +200,15 @@ const AdminDashboardPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
               Gérer les utilisateurs
+            </a>
+            <a
+              href="/admin/print-requests"
+              className="flex items-center gap-3 p-3 bg-pink-500/10 rounded-lg text-pink-600 hover:bg-pink-500/20 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Gérer les demandes d'impression
             </a>
           </div>
         </div>

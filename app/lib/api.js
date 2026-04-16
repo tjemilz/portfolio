@@ -397,6 +397,32 @@ export const imagesApi = {
   },
 
   /**
+   * Get all images (admin function)
+   */
+  async getAll(params = {}) {
+    const query = new URLSearchParams({
+      page_size: 'all',
+      ...params
+    }).toString();
+    const response = await apiFetch(`/api/galleries/images/${query ? `?${query}` : ''}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch images');
+    }
+    return response.json();
+  },
+
+  /**
+   * Update an image
+   */
+  async update(id, data) {
+    const response = await apiFetch(`/api/galleries/images/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    return response;
+  },
+
+  /**
    * Get download URL for an image
    */
   getDownloadUrl(id) {
@@ -433,6 +459,19 @@ export const imagesApi = {
     return response.blob();
   },
 };
+
+// ============================================
+// Named exports for convenience
+// ============================================
+
+// Auth functions
+export const { login, logout, getCurrentUser, changePassword } = authApi;
+
+// Gallery functions  
+export const { getGalleries, getPublicGalleries, getGalleryDetails, getGalleryImages, createGallery, updateGallery, deleteGallery } = galleriesApi;
+
+// Image functions
+export const { getAll: getAllImages, getImage, update: updateImage, getDownloadUrl, downloadMultiple } = imagesApi;
 
 // ============================================
 // Utility exports

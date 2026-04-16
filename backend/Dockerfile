@@ -22,6 +22,10 @@ RUN pip install --no-cache-dir gunicorn
 # Copy project
 COPY . .
 
+# Copy and set permissions for entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
@@ -43,6 +47,6 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "portfolio_api.wsgi:application"]
+# Use entrypoint script to run migrations before starting server
+ENTRYPOINT ["/app/entrypoint.sh"]
 

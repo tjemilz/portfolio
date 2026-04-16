@@ -70,7 +70,7 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py sync_galleries
 
-# Lancer
+# Lancer (sur http://127.0.0.1:8000)
 python manage.py runserver
 ```
 
@@ -79,6 +79,13 @@ python manage.py runserver
 ```bash
 # À la racine du projet
 npm install
+
+# Configuration pour le développement local
+# Le fichier .env.local est déjà créé avec :
+# NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+# NEXT_PUBLIC_MEDIA_URL=http://127.0.0.1:8000/media
+
+# Lancer (sur http://localhost:3000)
 npm run dev
 ```
 

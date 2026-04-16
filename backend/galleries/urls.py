@@ -4,11 +4,12 @@ URL configuration for galleries app.
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GalleryViewSet, ImageViewSet, UserGroupViewSet, serve_image, serve_thumbnail
+from .views import GalleryViewSet, ImageViewSet, UserGroupViewSet, PrintRequestViewSet, serve_image, serve_thumbnail
 
 router = DefaultRouter()
 router.register(r'images', ImageViewSet, basename='image')
 router.register(r'groups', UserGroupViewSet, basename='usergroup')
+router.register(r'print-requests', PrintRequestViewSet, basename='print-request')
 router.register(r'', GalleryViewSet, basename='gallery')
 
 urlpatterns = [
