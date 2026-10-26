@@ -36,6 +36,7 @@ class Command(BaseCommand):
                 source_path,
                 os.path.join(os.getcwd(), source_path),
                 f"/app/{os.path.basename(source_path)}",
+                f"/app/media/{os.path.basename(source_path)}",
                 f"/app/backend/{os.path.basename(source_path)}",
                 os.path.join(os.path.dirname(__file__), "..", "..", "..", os.path.basename(source_path)),
             ]
