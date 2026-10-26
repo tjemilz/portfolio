@@ -27,7 +27,7 @@ export default function GalleryGrid({
   const [isDownloading, setIsDownloading] = useState(false);
   const [printModalOpen, setPrintModalOpen] = useState(false);
   
-  const { isAuthenticated, getToken } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const openLightbox = (index) => {
     if (showLightbox && !isSelectionMode) {
@@ -247,7 +247,6 @@ export default function GalleryGrid({
           onClose={() => setPrintModalOpen(false)}
           selectedImages={images.filter(img => selectedImages.has(img.id))}
           gallerySlug={gallerySlug}
-          getToken={getToken}
         />
       )}
     </>

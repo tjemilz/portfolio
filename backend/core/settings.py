@@ -1,5 +1,5 @@
 """
-Django settings for portfolio_api project.
+Django settings for core project.
 """
 
 import os
@@ -8,16 +8,15 @@ import platform
 from pathlib import Path
 from datetime import timedelta
 
-# Détection du système d'exploitation
+# OS Detection
 IS_WINDOWS = platform.system() == 'Windows'
 IS_LINUX = platform.system() == 'Linux'
 IS_MAC = platform.system() == 'Darwin'
 
-# Try to import decouple, fallback to environment variables
+# Decouple fallback
 try:
     from decouple import config, Csv
 except ImportError:
-    # Fallback function if python-decouple is not installed
     def config(key, default=None, cast=None):
         value = os.environ.get(key, default)
         if cast and value is not None:
@@ -30,17 +29,12 @@ except ImportError:
         def __call__(self, value):
             return [x.strip() for x in value.split(',')]
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -56,26 +50,32 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'axes',
     
     # Local apps
-    'authentication',
+    'users',
     'galleries',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.gzip.GZipMiddleware',  # Compression GZIP
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'portfolio_api.middleware_protect_media.ProtectMediaMiddleware',  # Protection désactivée
+    'axes.middleware.AxesMiddleware',
 ]
 
-ROOT_URLCONF = 'portfolio_api.urls'
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -93,10 +93,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'portfolio_api.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
-
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -104,14 +102,15 @@ DATABASES = {
     }
 }
 
-
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -121,46 +120,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
 LANGUAGE_CODE = 'fr-fr'
-
 TIME_ZONE = 'Europe/Paris'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files
 MEDIA_URL = config('MEDIA_URL', default='/media/')
 MEDIA_ROOT = BASE_DIR / config('MEDIA_ROOT', default='media')
 
-
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Custom User Model
-AUTH_USER_MODEL = 'authentication.CustomUser'
-
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authentication.JWTCookieAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'portfolio_api.pagination.StandardPagination',
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.StandardPagination',
     'PAGE_SIZE': 20,
 }
-
 
 # JWT Configuration
 SIMPLE_JWT = {
@@ -179,57 +164,56 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
+# JWT Cookie Configuration
+JWT_AUTH_COOKIE = 'access_token'
+JWT_AUTH_REFRESH_COOKIE = 'refresh_token'
+JWT_AUTH_SAMESITE = 'Lax'
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv())
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000,http://127.0.0.1:3000', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
 
-# ===========================================
-# SECURITY SETTINGS (Production)
-# ===========================================
-
-# HTTPS/SSL Settings (activer en production avec HTTPS)
+# Security Settings
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Session & Cookie Security
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
 SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # Allows frontend reading CSRF if needed
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Security Headers
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
-# HSTS (HTTP Strict Transport Security) - activer en production avec HTTPS
-SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)  # 31536000 for 1 year
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
 SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=False, cast=bool)
 
-# Rate limiting (requires django-ratelimit or similar)
-# API_RATE_LIMIT = '100/hour'
-
-# ===========================================
-# NTFY Notifications (Security Alerts)
-# ===========================================
+# NTFY Notifications
 NTFY_ENABLED = config('NTFY_ENABLED', default=False, cast=bool)
 NTFY_SERVER_URL = config('NTFY_SERVER_URL', default='https://ntfy.sh')
 NTFY_TOPIC_SUCCESS = config('NTFY_TOPIC_SUCCESS', default='portfolio-login-success')
 NTFY_TOPIC_FAILED = config('NTFY_TOPIC_FAILED', default='portfolio-login-failed')
-NTFY_AUTH_TOKEN = config('NTFY_AUTH_TOKEN', default=None)  # For private topics
+NTFY_AUTH_TOKEN = config('NTFY_AUTH_TOKEN', default=None)
 
-# ===========================================
-# LOGGING CONFIGURATION (for Wazuh monitoring)
-# ===========================================
+# Axes Configuration (Anti-Brute Force Protection)
+AXES_FAILURE_LIMIT = config('AXES_FAILURE_LIMIT', default=5, cast=int)
+AXES_COOLOFF_TIME = timedelta(minutes=config('AXES_COOLOFF_MINUTES', default=15, cast=int))
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ["username", "ip_address"]
+AXES_ENABLE_ACCESS_FAILURE_LOG = True
+AXES_IPWARE_META_PRECEDENCE_ORDER = (
+    'HTTP_CF_CONNECTING_IP',
+    'HTTP_X_FORWARDED_FOR',
+    'REMOTE_ADDR',
+)
 
-# Configuration des handlers selon le système d'exploitation
+# Logging Configuration
 def get_logging_handlers():
-    """Retourne les handlers de logging adaptés au système."""
     handlers = {
         'console': {
             'level': 'DEBUG',
@@ -238,45 +222,54 @@ def get_logging_handlers():
         },
     }
     
-    # Syslog uniquement disponible sur Linux/Mac
-    if IS_LINUX:
+    if IS_LINUX and os.path.exists('/dev/log'):
         handlers['syslog'] = {
             'level': 'INFO',
             'class': 'logging.handlers.SysLogHandler',
             'address': '/dev/log',
             'formatter': 'wazuh',
-            'facility': 'LOG_LOCAL0',
+            'facility': 'local0',
         }
-    elif IS_MAC:
+    elif IS_MAC and os.path.exists('/var/run/syslog'):
         handlers['syslog'] = {
             'level': 'INFO',
             'class': 'logging.handlers.SysLogHandler',
             'address': '/var/run/syslog',
             'formatter': 'wazuh',
-            'facility': 'LOG_LOCAL0',
+            'facility': 'local0',
         }
-    elif IS_WINDOWS:
-        # Sur Windows, utiliser un fichier de log à la place de syslog
-        LOG_DIR = BASE_DIR / 'logs'
-        LOG_DIR.mkdir(exist_ok=True)
+    
+    # File logging only if syslog is absent and directory is actually writable
+    log_dir = BASE_DIR / 'logs'
+    log_file = log_dir / 'portfolio.log'
+    can_write_log = False
+    try:
+        log_dir.mkdir(exist_ok=True)
+        with open(log_file, 'a') as f:
+            pass
+        can_write_log = True
+    except Exception:
+        can_write_log = False
+
+    if can_write_log:
         handlers['file'] = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(LOG_DIR / 'portfolio.log'),
-            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'filename': str(log_file),
+            'maxBytes': 10 * 1024 * 1024,
             'backupCount': 5,
             'formatter': 'simple',
         }
     
     return handlers
 
-# Définir les handlers disponibles pour les loggers
 def get_logger_handlers():
-    """Retourne la liste des handlers à utiliser pour les loggers."""
-    if IS_WINDOWS:
-        return ['console', 'file']
-    else:
-        return ['console', 'syslog']
+    h = ['console']
+    if (IS_LINUX and os.path.exists('/dev/log')) or (IS_MAC and os.path.exists('/var/run/syslog')):
+        h.append('syslog')
+    elif os.access(BASE_DIR / 'logs', os.W_OK):
+        h.append('file')
+    return h
 
 LOGGING = {
     'version': 1,
@@ -295,14 +288,6 @@ LOGGING = {
             'style': '%',
         },
     },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
     'handlers': get_logging_handlers(),
     'loggers': {
         'django': {
@@ -310,14 +295,9 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'authentication': {
+        'users': {
             'handlers': get_logger_handlers(),
-            'level': 'INFO',  # Changé de WARNING à INFO pour capturer les connexions
-            'propagate': False,
-        },
-        'authentication.views': {
-            'handlers': get_logger_handlers(),
-            'level': 'INFO',  # Changé de WARNING à INFO
+            'level': 'INFO',
             'propagate': False,
         },
         'galleries': {

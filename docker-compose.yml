@@ -12,19 +12,20 @@ services:
       service: "portfolio-backend"
       description: "Django REST API for Portfolio"
     environment:
-      - DEBUG=False
-      - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - ALLOWED_HOSTS=${BACKEND_ALLOWED_HOSTS:-localhost,api.yourdomain.com}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://yourdomain.com}
+      - DEBUG=${DEBUG:-False}
+      - SECRET_KEY=${SECRET_KEY:-${DJANGO_SECRET_KEY:-django-insecure-dev-only-change-in-production-env}}
+      - ALLOWED_HOSTS=${BACKEND_ALLOWED_HOSTS:-localhost,127.0.0.1,backend,nginx,api.yourdomain.com}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:3000}
       - SECURE_SSL_REDIRECT=False  # Handled by reverse proxy
-      - SESSION_COOKIE_SECURE=True
-      - CSRF_COOKIE_SECURE=True
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-False}
+      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-False}
     volumes:
       - ./backend/media:/app/media
       - ./backend/db.sqlite3:/app/db.sqlite3
+      - ./backend/galleries:/app/galleries
+      - ./backend/users:/app/users
+      - ./backend/core:/app/core
       - backend_static:/app/staticfiles
-      # Exfiltrer les logs pour Wazuh monitoring
-      - ./logs/backend:/app/logs
     expose:
       - "8000"
     networks:

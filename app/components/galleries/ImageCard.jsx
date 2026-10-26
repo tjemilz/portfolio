@@ -23,6 +23,9 @@ export default function ImageCard({
 
   // Get full resolution image URL for lightbox/download
   const getFullImageUrl = () => {
+    if (image.secure_url) {
+      return image.secure_url;
+    }
     if (image.image_url) {
       return image.image_url;
     }
@@ -35,6 +38,9 @@ export default function ImageCard({
 
   // Build image URL - support both API served images and direct paths
   const getImageUrl = () => {
+    if (image.secure_url) {
+      return image.secure_url;
+    }
     // Use thumbnail for gallery grid display
     if (image.thumbnail_url) {
       return image.thumbnail_url;
@@ -55,7 +61,7 @@ export default function ImageCard({
   const handleDownload = async (e) => {
     e.stopPropagation();
     try {
-      const response = await fetch(getFullImageUrl());
+      const response = await fetch(getFullImageUrl(), { credentials: 'include' });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -72,10 +78,12 @@ export default function ImageCard({
 
   const imageUrl = getImageUrl();
   const altText = image.title || image.alt || image.filename || 'Image de la galerie';
+  const isLandscape = image.width && image.height ? image.width > image.height * 1.15 : false;
+  const aspectClass = isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]';
 
   if (hasError) {
     return (
-      <div className="relative aspect-[3/4] bg-slate-grey/10 rounded-sm flex items-center justify-center">
+      <div className={`relative ${aspectClass} bg-slate-grey/10 rounded-sm flex items-center justify-center`}>
         <div className="text-center text-slate-grey p-4">
           <svg 
             className="w-12 h-12 mx-auto mb-2" 
@@ -99,7 +107,7 @@ export default function ImageCard({
   return (
     <div 
       className={`
-        group relative aspect-[3/4] overflow-hidden rounded-sm cursor-pointer bg-slate-grey/10
+        group relative ${aspectClass} overflow-hidden rounded-sm cursor-pointer bg-slate-grey/10
         ${isSelectionMode ? 'ring-2 ring-offset-2 transition-all' : ''}
         ${isSelected ? 'ring-accent' : 'ring-transparent'}
       `}
@@ -140,6 +148,7 @@ export default function ImageCard({
         src={imageUrl}
         alt={altText}
         fill
+        unoptimized
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className={`
           object-cover image-hover
@@ -147,9 +156,6 @@ export default function ImageCard({
         `}
         priority={priority}
         loading={priority ? 'eager' : 'lazy'}
-        quality={85}
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
       />

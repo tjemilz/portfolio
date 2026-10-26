@@ -1,48 +1,26 @@
 /**
  * Centralized API client for backend communication.
- * Handles authentication tokens and common API patterns.
+ * Handles HttpOnly cookie authentication, concurrency-safe token refresh, and common API patterns.
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL || '/media';
 
-/**
- * Get stored access token
- */
-function getAccessToken() {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('access_token');
+// Refresh Mutex State
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+function subscribeTokenRefresh(cb) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(error) {
+  refreshSubscribers.forEach((cb) => cb(error));
+  refreshSubscribers = [];
 }
 
 /**
- * Get stored refresh token
- */
-function getRefreshToken() {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('refresh_token');
-}
-
-/**
- * Store tokens after login
- */
-function setTokens(accessToken, refreshToken) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('access_token', accessToken);
-  localStorage.setItem('refresh_token', refreshToken);
-}
-
-/**
- * Clear tokens on logout
- */
-function clearTokens() {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('user');
-}
-
-/**
- * Store user data
+ * Store user metadata (non-sensitive profile info only, no tokens)
  */
 function setUser(user) {
   if (typeof window === 'undefined') return;
@@ -50,77 +28,95 @@ function setUser(user) {
 }
 
 /**
- * Get stored user data
+ * Get stored user profile
  */
 function getUser() {
   if (typeof window === 'undefined') return null;
   const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  try {
+    return user ? JSON.parse(user) : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
- * Attempt to refresh the access token
+ * Clear cached user data
+ */
+function clearUser() {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('user');
+}
+
+/**
+ * Attempt to refresh the access token via secure HttpOnly cookie
  */
 async function refreshAccessToken() {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) {
-    throw new Error('No refresh token available');
-  }
-
   const response = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ refresh: refreshToken }),
   });
 
   if (!response.ok) {
-    clearTokens();
+    clearUser();
     throw new Error('Token refresh failed');
   }
 
-  const data = await response.json();
-  setTokens(data.access, data.refresh || refreshToken);
-  return data.access;
+  return response.json();
 }
 
 /**
- * Main fetch wrapper with authentication
+ * Main fetch wrapper with automatic credentials and single-flight token refresh
  */
 async function apiFetch(endpoint, options = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-  
+
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
   };
 
-  // Add auth token if available
-  const token = getAccessToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   let response = await fetch(url, {
+    credentials: 'include',
     ...options,
     headers,
   });
 
-  // Handle 401 - try to refresh token
-  if (response.status === 401 && token) {
-    try {
-      const newToken = await refreshAccessToken();
-      headers['Authorization'] = `Bearer ${newToken}`;
-      response = await fetch(url, {
-        ...options,
-        headers,
+  // Handle 401 Unauthorized with token refresh mutex
+  const isAuthEndpoint =
+    endpoint.includes('/api/auth/login') ||
+    endpoint.includes('/api/auth/refresh') ||
+    endpoint.includes('/api/auth/logout');
+
+  if (response.status === 401 && !isAuthEndpoint) {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      try {
+        await refreshAccessToken();
+        isRefreshing = false;
+        onRefreshed(null);
+      } catch (err) {
+        isRefreshing = false;
+        onRefreshed(err);
+        clearUser();
+        throw new Error('Session expired. Please login again.');
+      }
+    } else {
+      // Wait for concurrent refresh to complete
+      await new Promise((resolve, reject) => {
+        subscribeTokenRefresh((err) => (err ? reject(err) : resolve()));
       });
-    } catch (error) {
-      // Refresh failed, clear tokens
-      clearTokens();
-      throw new Error('Session expired. Please login again.');
     }
+
+    // Replay request with updated cookies
+    response = await fetch(url, {
+      credentials: 'include',
+      ...options,
+      headers,
+    });
   }
 
   return response;
@@ -132,7 +128,7 @@ async function apiFetch(endpoint, options = {}) {
 
 export const authApi = {
   /**
-   * Login user with email/username and password
+   * Login user with username and password (sets HttpOnly cookies)
    */
   async login(username, password) {
     const response = await apiFetch('/api/auth/login/', {
@@ -142,41 +138,68 @@ export const authApi = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
+      throw new Error(error.detail || error.error || 'Login failed');
     }
 
     const data = await response.json();
-    setTokens(data.access, data.refresh);
     setUser(data.user);
     return data;
   },
 
   /**
-   * Logout current user
+   * Logout current user (clears server cookies and local state)
    */
   async logout() {
     try {
-      const refreshToken = getRefreshToken();
-      if (refreshToken) {
-        await apiFetch('/api/auth/logout/', {
-          method: 'POST',
-          body: JSON.stringify({ refresh: refreshToken }),
-        });
-      }
+      await fetch(`${API_BASE_URL}/api/auth/logout/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     } finally {
-      clearTokens();
+      clearUser();
     }
   },
 
   /**
-   * Get current user info
+   * Get current authenticated user profile
    */
   async getMe() {
     const response = await apiFetch('/api/auth/me/');
     if (!response.ok) {
+      clearUser();
       throw new Error('Failed to get user info');
     }
-    return response.json();
+    const data = await response.json();
+    setUser(data);
+    return data;
+  },
+
+  /**
+   * Accept an invitation and activate account
+   */
+  async acceptInvitation(invitationData) {
+    const response = await apiFetch('/api/auth/accept-invitation/', {
+      method: 'POST',
+      body: JSON.stringify(invitationData),
+    });
+
+    if (!response.ok) {
+      let message = 'Échec de l\'activation de l\'invitation';
+      try {
+        const error = await response.json();
+        message = error.detail || error.error || (error.password ? error.password[0] : null) || (error.non_field_errors ? error.non_field_errors[0] : null) || (error.password_confirm ? error.password_confirm[0] : null) || (typeof error === 'string' ? error : message);
+      } catch (e) {}
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    if (data.user) {
+      setUser(data.user);
+    }
+    return data;
   },
 
   /**
@@ -201,10 +224,10 @@ export const authApi = {
   },
 
   /**
-   * Check if user is authenticated
+   * Check if user is authenticated locally
    */
   isAuthenticated() {
-    return !!getAccessToken();
+    return !!getUser();
   },
 
   /**
@@ -231,11 +254,11 @@ export const galleriesApi = {
 
     const query = searchParams.toString();
     const response = await apiFetch(`/api/galleries/${query ? `?${query}` : ''}`);
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch galleries');
     }
-    
+
     return response.json();
   },
 
@@ -321,6 +344,54 @@ export const galleriesApi = {
       throw new Error('Failed to delete gallery');
     }
   },
+
+  /**
+   * Get galleries configured for top navigation bar (ultra lightweight)
+   */
+  async getNavbar() {
+    const response = await apiFetch('/api/galleries/navbar/');
+    if (!response.ok) {
+      throw new Error('Failed to fetch navbar galleries');
+    }
+    return response.json();
+  },
+
+  /**
+   * Get featured galleries
+   */
+  async getFeatured() {
+    const response = await apiFetch('/api/galleries/featured/');
+    if (!response.ok) {
+      throw new Error('Failed to fetch featured galleries');
+    }
+    return response.json();
+  },
+
+  /**
+   * Toggle featured status for a gallery (admin only)
+   */
+  async toggleFeatured(slug) {
+    const response = await apiFetch(`/api/galleries/${slug}/toggle_featured/`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to toggle featured status');
+    }
+    return response.json();
+  },
+
+  /**
+   * Toggle top navbar visibility for a gallery (admin only)
+   */
+  async toggleNavbar(slug) {
+    const response = await apiFetch(`/api/galleries/${slug}/toggle_navbar/`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to toggle navbar visibility');
+    }
+    return response.json();
+  },
 };
 
 // ============================================
@@ -329,20 +400,14 @@ export const galleriesApi = {
 
 export const imagesApi = {
   /**
-   * Get all images with optional filters
+   * Get all accessible images
    */
   async getAll(params = {}) {
-    const searchParams = new URLSearchParams();
-    if (params.gallery) searchParams.append('gallery', params.gallery);
-    if (params.gallery_slug) searchParams.append('gallery_slug', params.gallery_slug);
-
-    const query = searchParams.toString();
+    const query = new URLSearchParams(params).toString();
     const response = await apiFetch(`/api/galleries/images/${query ? `?${query}` : ''}`);
-    
     if (!response.ok) {
       throw new Error('Failed to fetch images');
     }
-    
     return response.json();
   },
 
@@ -362,16 +427,13 @@ export const imagesApi = {
    */
   async upload(galleryId, imageFile, metadata = {}) {
     const formData = new FormData();
-    formData.append('gallery', galleryId);
-    formData.append('image', imageFile);
+    if (galleryId) formData.append('gallery_ids', galleryId);
+    formData.append('file', imageFile);
     if (metadata.title) formData.append('title', metadata.title);
-    if (metadata.description) formData.append('description', metadata.description);
-    if (metadata.alt_text) formData.append('alt_text', metadata.alt_text);
 
-    const token = getAccessToken();
     const response = await fetch(`${API_BASE_URL}/api/galleries/images/`, {
       method: 'POST',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      credentials: 'include',
       body: formData,
     });
 
@@ -380,6 +442,17 @@ export const imagesApi = {
       throw new Error(error.detail || 'Failed to upload image');
     }
 
+    return response.json();
+  },
+
+  /**
+   * Update image details
+   */
+  async update(id, data) {
+    const response = await apiFetch(`/api/galleries/images/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
     return response.json();
   },
 
@@ -397,48 +470,21 @@ export const imagesApi = {
   },
 
   /**
-   * Get all images (admin function)
-   */
-  async getAll(params = {}) {
-    const query = new URLSearchParams({
-      page_size: 'all',
-      ...params
-    }).toString();
-    const response = await apiFetch(`/api/galleries/images/${query ? `?${query}` : ''}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch images');
-    }
-    return response.json();
-  },
-
-  /**
-   * Update an image
-   */
-  async update(id, data) {
-    const response = await apiFetch(`/api/galleries/images/${id}/`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-    return response;
-  },
-
-  /**
-   * Get download URL for an image
+   * Get secure download/preview URL for an image
    */
   getDownloadUrl(id) {
-    return `${API_BASE_URL}/api/galleries/images/${id}/download/`;
+    return `${API_BASE_URL}/api/media/secure/${id}/`;
   },
 
   /**
    * Download multiple images as a ZIP file
    */
   async downloadMultiple(imageIds) {
-    const token = getAccessToken();
     const response = await fetch(`${API_BASE_URL}/api/galleries/images/download_multiple/`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ image_ids: imageIds }),
     });
@@ -448,40 +494,40 @@ export const imagesApi = {
       try {
         const error = await response.json();
         errorMessage = error.error || error.detail || errorMessage;
-      } catch (e) {
-        // Response might not be JSON
+      } catch {
         errorMessage = `HTTP ${response.status}: ${response.statusText}`;
       }
       throw new Error(errorMessage);
     }
 
-    // Return the blob for download
     return response.blob();
   },
 };
 
 // ============================================
-// Named exports for convenience
+// Named and Default Exports
 // ============================================
 
-// Auth functions
 export const { login, logout, getCurrentUser, changePassword } = authApi;
-
-// Gallery functions  
-export const { getGalleries, getPublicGalleries, getGalleryDetails, getGalleryImages, createGallery, updateGallery, deleteGallery } = galleriesApi;
-
-// Image functions
-export const { getAll: getAllImages, getImage, update: updateImage, getDownloadUrl, downloadMultiple } = imagesApi;
-
-// ============================================
-// Utility exports
-// ============================================
+export const {
+  getAll: getGalleries,
+  getPublic: getPublicGalleries,
+  getBySlug: getGalleryDetails,
+  getImages: getGalleryImages,
+  create: createGallery,
+  update: updateGallery,
+  delete: deleteGallery,
+} = galleriesApi;
+export const {
+  getAll: getAllImages,
+  getById: getImage,
+  update: updateImage,
+  getDownloadUrl,
+  downloadMultiple,
+} = imagesApi;
 
 export { API_BASE_URL, MEDIA_URL };
 
-/**
- * Build full media URL from relative path
- */
 export function getMediaUrl(path) {
   if (!path) return null;
   if (path.startsWith('http')) return path;

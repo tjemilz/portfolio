@@ -40,6 +40,7 @@ const NewGalleryPage = () => {
     event_date: '',
     event_location: '',
     is_featured: false,
+    show_in_navbar: true,
     allow_download: true,
     display_order: 0,
     allowed_groups: [],
@@ -52,9 +53,8 @@ const NewGalleryPage = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const token = localStorage.getItem('access_token');
         const response = await fetch(buildApiUrl('/api/galleries/groups/'), {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         });
         if (response.ok) {
           const data = await response.json();
@@ -111,8 +111,6 @@ const NewGalleryPage = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('access_token');
-      
       // Create FormData for multipart upload
       const data = new FormData();
       data.append('name', formData.name);
@@ -121,6 +119,7 @@ const NewGalleryPage = () => {
       data.append('gallery_type', formData.gallery_type);
       data.append('visibility', formData.visibility);
       data.append('is_featured', formData.is_featured);
+      data.append('show_in_navbar', formData.show_in_navbar);
       data.append('allow_download', formData.allow_download);
       data.append('display_order', formData.display_order);
       
@@ -143,9 +142,7 @@ const NewGalleryPage = () => {
 
       const response = await fetch(buildApiUrl('/api/galleries/'), {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
         body: data,
       });
 
@@ -422,7 +419,21 @@ const NewGalleryPage = () => {
                 />
                 <div>
                   <p className="font-medium text-space-indigo">Galerie mise en avant</p>
-                  <p className="text-sm text-slate-grey">Afficher cette galerie en priorité</p>
+                  <p className="text-sm text-slate-grey">Afficher cette galerie en priorité sur l'accueil</p>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  name="show_in_navbar"
+                  checked={formData.show_in_navbar}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 rounded"
+                />
+                <div>
+                  <p className="font-medium text-space-indigo">Afficher dans la barre supérieure</p>
+                  <p className="text-sm text-slate-grey">Inclure le lien direct vers cette galerie dans le menu supérieur</p>
                 </div>
               </label>
 

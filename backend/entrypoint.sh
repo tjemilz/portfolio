@@ -16,4 +16,4 @@ echo "Creating default galleries if needed..."
 python manage.py create_default_galleries || true
 
 echo "Starting Gunicorn server..."
-exec gunicorn --bind 0.0.0.0:8000 --workers 3 --threads 2 portfolio_api.wsgi:application
+exec gunicorn --bind 0.0.0.0:8000 --workers 3 --threads 2 core.wsgi:application

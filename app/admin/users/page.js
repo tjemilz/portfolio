@@ -15,6 +15,14 @@ const UsersManagementPage = () => {
   const [createModal, setCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ username: '', email: '', password: '', role: 'PUBLIC' });
   const [creating, setCreating] = useState(false);
+  
+  // Invitation Modal State
+  const [inviteModal, setInviteModal] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('PRIVATE');
+  const [inviting, setInviting] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -22,10 +30,9 @@ const UsersManagementPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl('/api/auth/users/'), {
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -52,11 +59,10 @@ const UsersManagementPage = () => {
 
   const handleRoleChange = async (user, newRole) => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/auth/users/${user.id}/`), {
         method: 'PATCH',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ role: newRole }),
@@ -77,12 +83,9 @@ const UsersManagementPage = () => {
 
   const handleDelete = async (user) => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/auth/users/${user.id}/`), {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -102,11 +105,10 @@ const UsersManagementPage = () => {
     setCreating(true);
     
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl('/api/auth/users/create/'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newUser),
@@ -126,6 +128,42 @@ const UsersManagementPage = () => {
       alert(err.message);
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleInviteUser = async (e) => {
+    e.preventDefault();
+    setInviting(true);
+    setGeneratedLink('');
+    setCopied(false);
+
+    try {
+      const response = await fetch(buildApiUrl('/api/auth/invite/'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: inviteEmail,
+          role: inviteRole,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || data.error || (data.email ? data.email[0] : 'Erreur lors de l\'envoi de l\'invitation'));
+      }
+
+      const data = await response.json();
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      setGeneratedLink(`${origin}/accept-invitation?token=${data.invitation_token}`);
+      fetchUsers();
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert(err.message);
+    } finally {
+      setInviting(false);
     }
   };
 
@@ -167,15 +205,30 @@ const UsersManagementPage = () => {
           <h1 className="text-2xl font-bold text-space-indigo">Gestion des utilisateurs</h1>
           <p className="text-slate-grey mt-1">{users.length} utilisateurs au total</p>
         </div>
-        <button
-          onClick={() => setCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-          Nouvel utilisateur
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setInviteModal(true);
+              setGeneratedLink('');
+              setCopied(false);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Inviter un membre
+          </button>
+          <button
+            onClick={() => setCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Nouvel utilisateur
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -504,6 +557,128 @@ const UsersManagementPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Invite User Modal */}
+      {inviteModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-space-indigo">
+                Inviter un membre
+              </h3>
+              <button
+                onClick={() => setInviteModal(false)}
+                className="text-slate-grey hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {generatedLink ? (
+              <div className="space-y-4">
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800">
+                  Invitation créée avec succès pour <strong>{inviteEmail}</strong> ! Copiez le lien ci-dessous et transmettez-le au destinataire :
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={generatedLink}
+                    className="flex-1 px-3 py-2 text-sm bg-gray-50 border border-gray-300 rounded-lg font-mono focus:outline-none"
+                    onClick={(e) => e.target.select()}
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedLink);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 3000);
+                    }}
+                    className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                      copied ? 'bg-green-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {copied ? 'Copié !' : 'Copier'}
+                  </button>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInviteModal(false);
+                      setGeneratedLink('');
+                      setInviteEmail('');
+                    }}
+                    className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleInviteUser} className="space-y-4">
+                <p className="text-sm text-slate-grey">
+                  Générez un lien d'accès sécurisé à usage unique valable 7 jours. Le membre pourra choisir son mot de passe lors de la création de son compte.
+                </p>
+
+                <div>
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
+                    Adresse email du destinataire *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="invite@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-shadow-grey mb-1">
+                    Rôle accordé
+                  </label>
+                  <select
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    <option value="PRIVATE">Privé - Accès aux galeries privées autorisées</option>
+                    <option value="ADMIN">Administrateur - Accès complet au back-office</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setInviteModal(false)}
+                    className="flex-1 px-4 py-2 text-shadow-grey bg-slate-grey/10 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={inviting || !inviteEmail}
+                    className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {inviting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Génération...
+                      </>
+                    ) : (
+                      'Générer l\'invitation'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

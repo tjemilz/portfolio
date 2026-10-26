@@ -21,21 +21,25 @@ const AdminDashboardPage = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       };
 
       // Fetch galleries
-      const galleriesRes = await fetch(buildApiUrl('/api/galleries/'), { headers });
+      const galleriesRes = await fetch(buildApiUrl('/api/galleries/'), {
+        credentials: 'include',
+        headers,
+      });
       const galleriesData = await galleriesRes.json();
       const galleries = galleriesData.results || galleriesData;
 
       // Fetch users (admin only endpoint)
       let usersCount = 0;
       try {
-        const usersRes = await fetch(buildApiUrl('/api/auth/users/'), { headers });
+        const usersRes = await fetch(buildApiUrl('/api/auth/users/'), {
+          credentials: 'include',
+          headers,
+        });
         if (usersRes.ok) {
           const usersData = await usersRes.json();
           usersCount = usersData.results?.length || usersData.length || 0;
@@ -51,7 +55,10 @@ const AdminDashboardPage = () => {
       // Fetch print requests count
       let pendingPrintRequestsCount = 0;
       try {
-        const printRequestsRes = await fetch(buildApiUrl('/api/galleries/print-requests/pending/'), { headers });
+        const printRequestsRes = await fetch(buildApiUrl('/api/galleries/print-requests/pending/'), {
+          credentials: 'include',
+          headers,
+        });
         if (printRequestsRes.ok) {
           const printRequestsData = await printRequestsRes.json();
           pendingPrintRequestsCount = printRequestsData.length || 0;

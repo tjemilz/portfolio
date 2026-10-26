@@ -21,21 +21,30 @@ portfolio/
 ├── app/                    # Frontend Next.js 15
 │   ├── components/         # Composants React (Navbar, Footer, Galleries...)
 │   ├── hooks/              # Hooks (useGalleries, useBestOfImages)
-│   ├── lib/                # Client API centralisé
+│   ├── lib/                # Client API centralisé (cookies HttpOnly)
 │   ├── providers/          # AuthProvider (contexte utilisateur)
 │   ├── admin/              # Panel d'administration
 │   ├── gallery/[slug]/     # Pages galleries dynamiques
 │   └── login/              # Page de connexion
 ├── backend/                # Backend Django 5
-│   ├── authentication/     # JWT, utilisateurs, notifications
-│   ├── galleries/          # Galleries, images, groupes
-│   ├── portfolio_api/      # Configuration Django
-│   └── media/              # Stockage des images
-├── nginx/                  # Configuration reverse proxy
+│   ├── core/               # Configuration centrale (settings, wsgi, asgi)
+│   ├── users/              # Authentification UUID, cookies JWT, invitations
+│   ├── galleries/          # Galleries, images, AccessGroup, print requests
+│   └── media/              # Stockage sécurisé des photos
+├── nginx/                  # Reverse proxy Nginx & X-Accel-Redirect
+├── middleware.js           # Protection des routes /admin par edge Next.js
 ├── docker-compose.yml      # Stack Docker complète
-├── DEPLOYMENT.md           # Guide de déploiement Proxmox
+├── RUN_GUIDE.md            # Guide complet d'exploitation & de mise à jour
+├── DEPLOYMENT.md           # Guide de déploiement Proxmox & Cloudflare Tunnel
 └── PROJECT_ROADMAP.md      # Roadmap du projet
 ```
+
+---
+
+## 🚀 Guide d'Exécution & d'Exploitation
+
+Pour lancer l'application (premier démarrage ou lancements quotidiens) et gérer les mises à jour, consultez le guide dédié :  
+👉 **[Guide d'Exploitation & Déploiement (RUN_GUIDE.md)](RUN_GUIDE.md)**
 
 ---
 

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useParams, notFound } from 'next/navigation';
 import { useGallery, useGalleryImages } from '../../hooks/useGalleries';
-import { GalleryGrid, GalleryGridSkeleton } from '../../components/galleries';
+import { SmartGalleryGrid, GalleryGridSkeleton } from '../../components/galleries';
 
 export default function GalleryPage() {
   const params = useParams();
@@ -140,7 +140,7 @@ export default function GalleryPage() {
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
           {images && images.length > 0 ? (
-            <GalleryGrid 
+            <SmartGalleryGrid 
               images={images} 
               loading={imagesLoading} 
               gallerySlug={slug}

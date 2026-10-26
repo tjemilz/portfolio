@@ -36,15 +36,13 @@ const GroupsManagementPage = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       };
 
       const [groupsRes, usersRes] = await Promise.all([
-        fetch(buildApiUrl('/api/galleries/groups/'), { headers }),
-        fetch(buildApiUrl('/api/auth/users/'), { headers }),
+        fetch(buildApiUrl('/api/galleries/groups/'), { credentials: 'include', headers }),
+        fetch(buildApiUrl('/api/auth/users/'), { credentials: 'include', headers }),
       ]);
 
       if (groupsRes.ok) {
@@ -68,15 +66,13 @@ const GroupsManagementPage = () => {
   const handleCreateDefaultGroups = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('access_token');
-      
       for (const group of DEFAULT_GROUPS) {
         const exists = groups.some(g => g.name.toLowerCase() === group.name.toLowerCase());
         if (!exists) {
           await fetch(buildApiUrl('/api/galleries/groups/'), {
             method: 'POST',
+            credentials: 'include',
             headers: {
-              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(group),
@@ -98,11 +94,10 @@ const GroupsManagementPage = () => {
     setSaving(true);
     
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl('/api/galleries/groups/'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
@@ -129,11 +124,10 @@ const GroupsManagementPage = () => {
     setSaving(true);
     
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
@@ -160,12 +154,9 @@ const GroupsManagementPage = () => {
     setSaving(true);
     
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -188,11 +179,10 @@ const GroupsManagementPage = () => {
     setSaving(true);
     
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/galleries/groups/${selectedGroup.id}/`), {
         method: 'PATCH',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ member_ids: formData.member_ids }),

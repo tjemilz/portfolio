@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../providers/AuthProvider';
 import { galleriesApi } from '../lib/api';
 
@@ -21,6 +22,7 @@ function GalleryCard({ gallery, index }) {
               src={gallery.cover_url}
               alt={gallery.name}
               fill
+              unoptimized
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover image-hover"
             />
@@ -79,12 +81,21 @@ function GalleryCard({ gallery, index }) {
   );
 }
 
-export default function GalleriesPage() {
+function GalleriesContent() {
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get('filter') || 'all';
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [galleries, setGalleries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(initialFilter);
+
+  useEffect(() => {
+    const qFilter = searchParams.get('filter');
+    if (qFilter) {
+      setFilter(qFilter);
+    }
+  }, [searchParams]);
 
   const fetchGalleries = useCallback(async () => {
     setLoading(true);
@@ -93,7 +104,7 @@ export default function GalleriesPage() {
     try {
       const data = await galleriesApi.getAll();
       const allGalleries = data.results || data;
-      const filteredGalleries = allGalleries.filter(g => g.slug !== 'bestof');
+      const filteredGalleries = allGalleries.filter(g => g.slug !== 'bestof' && g.slug !== 'best-of');
       setGalleries(filteredGalleries);
     } catch (err) {
       console.error('Error fetching galleries:', err);
@@ -280,5 +291,17 @@ export default function GalleriesPage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function GalleriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-2 border-accent/20 border-t-accent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <GalleriesContent />
+    </Suspense>
   );
 }

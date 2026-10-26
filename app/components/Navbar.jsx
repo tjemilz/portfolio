@@ -22,24 +22,12 @@ const Navbar = () => {
   const mouseDetectionAreaRef = useRef(null);
   const isHomePage = pathname === '/';
   
-  // Charger les galeries publiques
+  // Charger les galeries de la barre supérieure (optimisé serveur & mobile)
   useEffect(() => {
     async function fetchGalleries() {
       try {
-        const data = await galleriesApi.getPublic();
-        // Flatten all galleries from different types, excluding 'bestof'
-        const allGalleries = [];
-        Object.entries(data).forEach(([type, galleries]) => {
-          galleries.forEach(gallery => {
-            // Exclure bestof car il est utilisé sur la page d'accueil
-            if (gallery.slug !== 'bestof') {
-              allGalleries.push(gallery);
-            }
-          });
-        });
-        // Trier par display_order ou nom
-        allGalleries.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-        setPublicGalleries(allGalleries);
+        const data = await galleriesApi.getNavbar();
+        setPublicGalleries(data);
       } catch (error) {
         console.error('Error fetching galleries for navbar:', error);
       } finally {
@@ -186,6 +174,7 @@ const Navbar = () => {
             <Link 
               key={gallery.id}
               href={`/gallery/${gallery.slug}`}
+              onClick={() => setIsMenuOpen(false)}
               className={`relative text-sm font-medium uppercase tracking-wider transition-colors ${
                 pathname === `/gallery/${gallery.slug}` 
                   ? 'text-accent' 
@@ -194,7 +183,7 @@ const Navbar = () => {
                 pathname === `/gallery/${gallery.slug}` ? 'after:scale-x-100' : ''
               }`}
             >
-              {gallery.name}
+              {gallery.name || gallery.title}
             </Link>
           ))
         )}
@@ -202,6 +191,7 @@ const Navbar = () => {
         {/* Lien vers toutes les galeries */}
         <Link 
           href="/galleries"
+          onClick={() => setIsMenuOpen(false)}
           className={`relative text-sm font-medium uppercase tracking-wider transition-colors flex items-center gap-1 ${
             pathname === '/galleries' 
               ? 'text-accent' 
@@ -216,6 +206,7 @@ const Navbar = () => {
         
         <Link 
           href="/bio"
+          onClick={() => setIsMenuOpen(false)}
           className={`px-5 py-2 rounded-full font-medium text-sm transition-all duration-300 ${
             pathname === '/bio' 
               ? 'bg-accent text-white' 

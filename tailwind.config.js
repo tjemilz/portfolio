@@ -1,4 +1,3 @@
-js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -17,7 +16,7 @@ module.exports = {
         'foreground': '#272932',
         'space-indigo': '#25283d',
         'shadow-grey': '#272932',
-        'slate-grey': '#6d8a96',
+        'slate-grey': '#4b616c',
         'ruby-red': '#a4031f',
         'accent': '#a4031f',
         'accent-hover': '#8a0219',
