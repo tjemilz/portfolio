@@ -21,20 +21,18 @@ const ImagesManagementPage = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       };
 
-      // Fetch all galleries (no pagination)
-      const galleriesRes = await fetch(buildApiUrl('/api/galleries/?page_size=all'), { headers });
+      // Fetch all galleries
+      const galleriesRes = await fetch(buildApiUrl('/api/galleries/?page_size=all'), { credentials: 'include', headers });
       const galleriesData = await galleriesRes.json();
       const galleriesList = galleriesData.results || galleriesData;
       setGalleries(galleriesList);
 
-      // Fetch all images (no pagination)
-      const imagesRes = await fetch(buildApiUrl('/api/galleries/images/?page_size=all'), { headers });
+      // Fetch all images
+      const imagesRes = await fetch(buildApiUrl('/api/galleries/images/?page_size=all'), { credentials: 'include', headers });
       const imagesData = await imagesRes.json();
       setImages(imagesData.results || imagesData);
       
@@ -53,10 +51,9 @@ const ImagesManagementPage = () => {
   // Single image delete
   const handleDelete = async (image) => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/galleries/images/${image.id}/`), {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Erreur lors de la suppression');
@@ -74,11 +71,10 @@ const ImagesManagementPage = () => {
     if (!confirm(`Supprimer ${selectedImages.length} images ?`)) return;
 
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl('/api/galleries/images/bulk_delete/'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ image_ids: selectedImages }),
@@ -97,11 +93,10 @@ const ImagesManagementPage = () => {
   // Update single image galleries
   const handleUpdateGalleries = async (imageId, galleryIds) => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await fetch(buildApiUrl(`/api/galleries/images/${imageId}/update_galleries/`), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ gallery_ids: galleryIds }),
@@ -123,7 +118,6 @@ const ImagesManagementPage = () => {
   // Bulk update galleries
   const handleBulkUpdateGalleries = async (galleryIds, action) => {
     try {
-      const token = localStorage.getItem('access_token');
       const body = { image_ids: selectedImages };
       
       if (action === 'set') body.set_galleries = galleryIds;
@@ -132,8 +126,8 @@ const ImagesManagementPage = () => {
       
       const response = await fetch(buildApiUrl('/api/galleries/images/bulk_update_galleries/'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
@@ -568,7 +562,6 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
   const handleUpload = async () => {
     if (files.length === 0 || (!noGallery && selectedGalleryIds.length === 0)) return;
     setUploading(true);
-    const token = localStorage.getItem('access_token');
     let success = 0;
     const errors = [];
 
@@ -578,21 +571,27 @@ const UploadModal = ({ open, galleries, onClose, onUploadComplete }) => {
         const formData = new FormData();
         formData.append('image', files[i]);
         formData.append('title', files[i].name.replace(/\.[^/.]+$/, ''));
+        if (!noGallery && selectedGalleryIds.length > 0) {
+          selectedGalleryIds.forEach(gid => formData.append('gallery_ids', gid));
+        }
 
         const res = await fetch(buildApiUrl('/api/galleries/images/'), {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
           body: formData,
         });
 
         if (!res.ok) throw new Error('Upload failed');
         const data = await res.json();
 
-        // Add to galleries only if not "no gallery"
+        // Ensure gallery associations are synchronized
         if (!noGallery && selectedGalleryIds.length > 0) {
           await fetch(buildApiUrl(`/api/galleries/images/${data.id}/update_galleries/`), {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ gallery_ids: selectedGalleryIds }),
           });
         }

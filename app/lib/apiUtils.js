@@ -28,11 +28,14 @@ export function buildApiUrl(endpoint) {
 }
 
 /**
- * Fetch wrapper that uses buildApiUrl
+ * Fetch wrapper that uses buildApiUrl and includes credentials
  */
 export async function apiFetch(endpoint, options = {}) {
   const url = buildApiUrl(endpoint);
-  return fetch(url, options);
+  return fetch(url, {
+    credentials: 'include',
+    ...options,
+  });
 }
 
 /**

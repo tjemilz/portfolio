@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 const PRINT_SIZES = [
   { value: '10x15', label: '10x15 cm', price: 0.50 },
@@ -16,6 +18,7 @@ export default function PrintRequestModal({
   gallerySlug,
   getToken 
 }) {
+  const { isAuthenticated } = useAuth();
   const [cart, setCart] = useState([]);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
@@ -70,19 +73,12 @@ export default function PrintRequestModal({
     setError('');
 
     try {
-      const token = getToken();
-      if (!token) {
+      if (!isAuthenticated) {
         setError('Vous devez être connecté pour faire une demande d\'impression');
         setLoading(false);
         return;
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const url = `${apiUrl}/api/galleries/print-requests/`;
-      
-      console.log('Sending print request to:', url);
-      console.log('Token:', token?.substring(0, 20) + '...');
-      
       const requestBody = {
         items: cart.map(item => ({
           image: item.image,
@@ -92,14 +88,12 @@ export default function PrintRequestModal({
         })),
         notes: notes,
       };
-      
-      console.log('Request body:', requestBody);
 
-      const response = await fetch(url, {
+      const response = await fetch(buildApiUrl('/api/galleries/print-requests/'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
@@ -186,6 +180,7 @@ export default function PrintRequestModal({
                     src={item.imageData.thumbnail_url || item.imageData.image_url}
                     alt={item.imageData.title || 'Photo'}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 </div>

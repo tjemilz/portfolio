@@ -20,7 +20,6 @@ const STATUS_LABELS = {
 };
 
 export default function PrintRequestsPage() {
-  const { getToken } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -32,13 +31,10 @@ export default function PrintRequestsPage() {
 
   const fetchRequests = async () => {
     try {
-      const token = getToken();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/galleries/print-requests/`,
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/print-requests/`,
         {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         }
       );
       const data = await response.json();
@@ -54,14 +50,13 @@ export default function PrintRequestsPage() {
 
   const updateStatus = async (requestId, newStatus) => {
     try {
-      const token = getToken();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/galleries/print-requests/${requestId}/`,
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/print-requests/${requestId}/`,
         {
           method: 'PATCH',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({ status: newStatus }),
         }
@@ -85,14 +80,11 @@ export default function PrintRequestsPage() {
     }
 
     try {
-      const token = getToken();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/galleries/print-requests/${requestId}/`,
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/print-requests/${requestId}/`,
         {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         }
       );
 
@@ -251,6 +243,7 @@ export default function PrintRequestsPage() {
                           src={item.image_thumbnail || '/placeholder.jpg'}
                           alt={item.image_title || 'Photo'}
                           fill
+                          unoptimized
                           className="object-cover rounded"
                         />
                       </div>

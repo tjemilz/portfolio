@@ -36,6 +36,9 @@ export default function Lightbox({
 
   // Get full resolution image URL
   const getImageUrl = () => {
+    if (currentImage.secure_url) {
+      return currentImage.secure_url;
+    }
     if (currentImage.image_url) {
       return currentImage.image_url;
     }
@@ -85,7 +88,7 @@ export default function Lightbox({
     const preloadImage = (index) => {
       if (index >= 0 && index < images.length) {
         const img = new window.Image();
-        const preloadUrl = images[index].image_url || 
+        const preloadUrl = images[index].secure_url || images[index].image_url || 
           (images[index].filename && gallerySlug 
             ? `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/images/${images[index].filename}/`
             : images[index].image || images[index].src);
@@ -97,36 +100,54 @@ export default function Lightbox({
     preloadImage(currentIndex + 1);
   }, [currentIndex, images, gallerySlug]);
 
-  // Touch gestures for swipe
-  const minSwipeDistance = 50;
+  // Touch gestures for swipe (horizontal: navigate, vertical down: close)
+  const minSwipeDistance = 45;
 
   const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    if (e.targetTouches.length === 1) {
+      setTouchEnd(null);
+      setTouchStart({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    }
   };
 
   const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (e.targetTouches.length === 1) {
+      setTouchEnd({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    }
   };
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    const deltaX = touchStart.x - touchEnd.x;
+    const deltaY = touchStart.y - touchEnd.y;
+    
+    // Vertical swipe down (pull down) to close on mobile
+    if (deltaY < -65 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2) {
+      onClose();
+      return;
+    }
 
-    if (isLeftSwipe) {
-      onNext();
-    } else if (isRightSwipe) {
-      onPrevious();
+    // Horizontal swipe to navigate
+    if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        onNext();
+      } else {
+        onPrevious();
+      }
     }
   };
 
   // Download handler
   const handleDownload = async () => {
     try {
-      const response = await fetch(imageUrl);
+      const response = await fetch(imageUrl, { credentials: 'include' });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -149,11 +170,11 @@ export default function Lightbox({
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-50 p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300"
+        className="absolute top-4 right-4 md:top-6 md:right-6 z-50 p-3.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 transition-all duration-200 touch-manipulation"
         aria-label="Fermer"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
@@ -164,11 +185,11 @@ export default function Lightbox({
             e.stopPropagation();
             handleDownload();
           }}
-          className="absolute top-6 right-20 z-50 p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300"
+          className="absolute top-4 right-16 md:top-6 md:right-20 z-50 p-3.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 transition-all duration-200 touch-manipulation"
           aria-label="Télécharger"
         >
           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
         </button>
       )}
@@ -216,37 +237,17 @@ export default function Lightbox({
           </div>
         )}
 
-        {/* Thumbnail (quick preview) */}
-        {thumbnailUrl && !showFullRes && (
-          <Image
-            src={thumbnailUrl}
-            alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
-            fill
-            className="object-contain blur-sm"
-            sizes="100vw"
-            priority
-            unoptimized={thumbnailUrl.startsWith('/media/') || thumbnailUrl.includes('/media/')}
-            onLoad={() => {
-              setIsLoading(false);
-              // Start loading full resolution after thumbnail is displayed
-              setShowFullRes(true);
-            }}
-          />
-        )}
-
-        {/* Main image (full resolution) */}
-        {(showFullRes || !thumbnailUrl) && (
-          <Image
-            src={imageUrl}
-            alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
-            fill
-            className="object-contain"
-            sizes="100vw"
-            priority
-            unoptimized={imageUrl.startsWith('/media/') || imageUrl.includes('/media/')}
-            onLoad={() => setIsLoading(false)}
-          />
-        )}
+        {/* Main image */}
+        <Image
+          src={imageUrl}
+          alt={currentImage.title || currentImage.alt || `Image ${currentIndex + 1}`}
+          fill
+          unoptimized
+          className="object-contain"
+          sizes="100vw"
+          priority
+          onLoad={() => setIsLoading(false)}
+        />
       </div>
 
       {/* Image counter */}

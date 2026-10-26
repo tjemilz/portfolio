@@ -11,7 +11,7 @@ const PRINT_SIZES = [
 ];
 
 export default function PrintRequestManager() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [galleries, setGalleries] = useState([]);
   const [selectedGallery, setSelectedGallery] = useState('');
   const [galleryImages, setGalleryImages] = useState([]);
@@ -47,14 +47,12 @@ export default function PrintRequestManager() {
         
         console.log('All public galleries:', allPublicGalleries);
         
-        // Si on a un token, récupérer aussi les galeries privées
+        // Si on est connecté, récupérer aussi les galeries privées
         let allGalleries = [...allPublicGalleries];
-        if (token) {
+        if (user) {
           try {
-            const privateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries/`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
+            const privateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/`, {
+              credentials: 'include',
             });
             const privateData = await privateResponse.json();
             
@@ -88,17 +86,15 @@ export default function PrintRequestManager() {
     }
 
     fetchGalleries();
-  }, [token]);
+  }, [user]);
 
   // Charger les images d'une galerie
   const loadGalleryImages = async (gallerySlug) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/galleries/${gallerySlug}/`,
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/${gallerySlug}/`,
         {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         }
       );
       const data = await response.json();
@@ -152,12 +148,12 @@ export default function PrintRequestManager() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/galleries/print-requests/`,
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/api/galleries/print-requests/`,
         {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
             notes,
@@ -263,6 +259,7 @@ export default function PrintRequestManager() {
                           src={item.imageData.thumbnail_url || item.imageData.image_url}
                           alt={item.imageData.title || 'Photo'}
                           fill
+                          unoptimized
                           className="object-cover rounded"
                         />
                       </div>
@@ -367,6 +364,7 @@ function ImageSelector({ image, onAdd }) {
           src={image.thumbnail_url || image.image_url}
           alt={image.title || 'Photo'}
           fill
+          unoptimized
           className="object-cover transition-transform group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
@@ -390,6 +388,7 @@ function ImageSelector({ image, onAdd }) {
                 src={image.image_url || image.thumbnail_url}
                 alt={image.title || 'Photo'}
                 fill
+                unoptimized
                 className="object-contain"
               />
             </div>

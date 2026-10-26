@@ -12,38 +12,14 @@ const AdminLayout = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Vérification directe du localStorage au montage
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('access_token');
-    
-    console.log('[AdminLayout] Direct check:', { 
-      hasToken: !!token, 
-      hasStoredUser: !!storedUser,
-      storedUserData: storedUser ? JSON.parse(storedUser) : null
-    });
-
-    // Si on a un token et un user dans le localStorage, on est OK
-    if (token && storedUser) {
-      const userData = JSON.parse(storedUser);
-      const userIsAdmin = userData.role === 'ADMIN' || userData.is_superuser;
-      
-      if (!userIsAdmin) {
-        router.push('/');
+    if (!loading) {
+      if (!isAuthenticated || !isAdmin) {
+        router.push('/login?redirect=/admin');
       } else {
         setIsChecking(false);
       }
-    } else if (!loading) {
-      // Pas de token ou pas de user, et le loading est terminé
-      router.push('/login?redirect=/admin');
     }
-  }, [loading, router]);
-
-  // Mettre à jour isChecking quand les données auth sont prêtes
-  useEffect(() => {
-    if (!loading && isAuthenticated && isAdmin) {
-      setIsChecking(false);
-    }
-  }, [loading, isAuthenticated, isAdmin]);
+  }, [loading, isAuthenticated, isAdmin, router]);
 
   // Afficher le loader pendant la vérification
   if (isChecking) {

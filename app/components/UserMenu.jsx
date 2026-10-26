@@ -94,7 +94,7 @@ export default function UserMenu() {
           <div className="py-2">
             {/* Galleries privées */}
             <Link
-              href="/private-galleries"
+              href="/galleries?filter=private"
               className="flex items-center gap-3 px-4 py-2 text-sm text-slate-grey hover:bg-slate-grey/5 transition-colors"
               onClick={() => setIsOpen(false)}
             >

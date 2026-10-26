@@ -1,21 +1,28 @@
 """
-URL configuration for galleries app.
+URL configuration for galleries, media, access groups, and print requests.
 """
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GalleryViewSet, ImageViewSet, UserGroupViewSet, PrintRequestViewSet, serve_image, serve_thumbnail
+from .views import (
+    GalleryViewSet,
+    ImageViewSet,
+    AccessGroupViewSet,
+    PrintRequestViewSet,
+    serve_secure_media
+)
 
 router = DefaultRouter()
-router.register(r'images', ImageViewSet, basename='image')
-router.register(r'groups', UserGroupViewSet, basename='usergroup')
-router.register(r'print-requests', PrintRequestViewSet, basename='print-request')
-router.register(r'', GalleryViewSet, basename='gallery')
+router.register(r'galleries/images', ImageViewSet, basename='image')
+router.register(r'galleries/print-requests', PrintRequestViewSet, basename='print-request')
+router.register(r'galleries/groups', AccessGroupViewSet, basename='gallery-group')
+router.register(r'groups', AccessGroupViewSet, basename='group')
+router.register(r'galleries', GalleryViewSet, basename='gallery')
 
 urlpatterns = [
-    # Secure image serving endpoints
-    path('<slug:gallery_slug>/images/<str:filename>/', serve_image, name='serve-image'),
-    path('<slug:gallery_slug>/thumbnails/<str:filename>/', serve_thumbnail, name='serve-thumbnail'),
-    # Router URLs
+    # High-performance X-Accel-Redirect media route
+    path('media/secure/<uuid:image_id>/', serve_secure_media, name='serve-secure-media'),
+    
+    # API endpoints
     path('', include(router.urls)),
 ]

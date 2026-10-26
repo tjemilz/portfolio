@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
+import { buildApiUrl } from '@/app/lib/apiUtils';
 
 /**
  * ImageUploader Component
@@ -123,7 +124,6 @@ export default function ImageUploader({
     setUploading(true);
     setResults(null);
     
-    const token = localStorage.getItem('access_token');
     const formData = new FormData();
     
     files.forEach(f => {
@@ -134,11 +134,9 @@ export default function ImageUploader({
       // Update all files to uploading status
       setFiles(prev => prev.map(f => ({ ...f, status: 'uploading' })));
       
-      const response = await fetch(`/api/galleries/${gallerySlug}/upload/`, {
+      const response = await fetch(buildApiUrl(`/api/galleries/${gallerySlug}/upload/`), {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
         body: formData,
       });
       

@@ -7,77 +7,38 @@ const AuthContext = createContext(null);
 
 /**
  * Authentication Provider Component
- * Wraps the app to provide auth state and functions
+ * Manages user authentication state based on HttpOnly cookies
  */
 export function AuthProvider({ children }) {
-  // Initialiser avec l'utilisateur du localStorage si disponible
-  const [user, setUser] = useState(() => {
-    if (typeof window === 'undefined') return null;
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-  // Si on a un utilisateur dans le localStorage, pas besoin de loading
-  const [loading, setLoading] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    const storedUser = localStorage.getItem('user');
-    const hasToken = localStorage.getItem('access_token');
-    // Pas de loading si on a déjà un utilisateur ET un token
-    return !(storedUser && hasToken);
-  });
+  const [user, setUser] = useState(() => authApi.getCurrentUser());
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check auth status on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   /**
-   * Check if user is authenticated
+   * Validate authentication status with backend
    */
   const checkAuth = useCallback(async () => {
     setError(null);
-    
     try {
-      // D'abord vérifier si on a un token
-      if (!authApi.isAuthenticated()) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-      
-      // L'utilisateur est déjà chargé depuis le state initial
-      const currentUser = authApi.getCurrentUser();
-      if (currentUser && !user) {
-        setUser(currentUser);
-      }
-      
-      // Valider avec l'API en arrière-plan (sans bloquer)
-      try {
-        const userData = await authApi.getMe();
-        setUser(userData);
-        // Mettre à jour le localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('user', JSON.stringify(userData));
-        }
-      } catch (apiError) {
-        // Garder l'utilisateur du localStorage si l'API échoue
-      }
-    } catch (err) {
-      console.error('[Auth] Auth check failed:', err);
+      const userData = await authApi.getMe();
+      setUser(userData);
+    } catch {
       setUser(null);
-      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   /**
-   * Login with username/email and password
+   * Login handler
    */
   const login = useCallback(async (username, password) => {
     setLoading(true);
     setError(null);
-    
     try {
       const data = await authApi.login(username, password);
       setUser(data.user);
@@ -91,12 +52,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Logout current user
+   * Logout handler
    */
   const logout = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
     try {
       await authApi.logout();
     } catch (err) {
@@ -108,24 +68,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Refresh user data from server
+   * Force refresh user data
    */
   const refreshUser = useCallback(async () => {
-    if (!authApi.isAuthenticated()) return;
-    
     try {
       const userData = await authApi.getMe();
       setUser(userData);
       return userData;
     } catch (err) {
       console.error('Failed to refresh user:', err);
+      setUser(null);
       throw err;
     }
-  }, []);
-
-  const getToken = useCallback(() => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('access_token');
   }, []);
 
   const value = {
@@ -133,13 +87,13 @@ export function AuthProvider({ children }) {
     loading,
     error,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'ADMIN' || user?.is_superuser,
-    isPrivate: user?.role === 'PRIVATE' || user?.role === 'ADMIN' || user?.is_superuser,
+    isAdmin: user?.role === 'ADMIN' || !!user?.is_superuser,
+    isPrivate: user?.role === 'PRIVATE' || user?.role === 'ADMIN' || !!user?.is_superuser,
     login,
     logout,
     checkAuth,
     refreshUser,
-    getToken,
+    getToken: () => null, // Backwards-compatibility helper for any legacy callers
   };
 
   return (
@@ -149,16 +103,11 @@ export function AuthProvider({ children }) {
   );
 }
 
-/**
- * Hook to use auth context
- */
 export function useAuth() {
   const context = useContext(AuthContext);
-  
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
   return context;
 }
 

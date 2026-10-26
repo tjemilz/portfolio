@@ -64,23 +64,28 @@ export default function Home() {
   const [showExplore, setShowExplore] = useState(false);
   const [showCapture, setShowCapture] = useState(false);
 
-  // Charger les galleries
+  // Charger les galeries mises en avant (fallback sur les premières galeries publiques)
   useEffect(() => {
     async function fetchGalleries() {
       try {
-        const data = await galleriesApi.getPublic();
-        const allGalleries = [];
-        Object.entries(data).forEach(([type, gals]) => {
-          gals.forEach(gallery => {
-            if (gallery.slug !== 'bestof') {
-              allGalleries.push(gallery);
-            }
+        let featured = await galleriesApi.getFeatured();
+        if (featured && featured.length > 0) {
+          setGalleries(featured.slice(0, 6));
+        } else {
+          const data = await galleriesApi.getPublic();
+          const allGalleries = [];
+          Object.entries(data).forEach(([type, gals]) => {
+            gals.forEach(gallery => {
+              if (gallery.slug !== 'bestof' && gallery.slug !== 'best-of') {
+                allGalleries.push(gallery);
+              }
+            });
           });
-        });
-        allGalleries.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-        setGalleries(allGalleries.slice(0, 6));
+          allGalleries.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+          setGalleries(allGalleries.slice(0, 6));
+        }
       } catch (error) {
-        console.error('Error fetching galleries:', error);
+        console.error('Error fetching galleries for homepage:', error);
       } finally {
         setGalleriesLoading(false);
       }
@@ -187,36 +192,23 @@ export default function Home() {
             <RevealSection delay={200}>
               <div className="relative">
                 <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg shadow-2xl">
-                  {images.map((image, index) => {
-                    const imgUrl = image.image_url || image.thumbnail_url;
-                    const isMediaUrl = imgUrl && (imgUrl.startsWith('/media/') || imgUrl.includes('/media/'));
-                    return (
-                      <div
-                        key={image.id || index}
-                        className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
-                      >
-                        {isMediaUrl ? (
-                          <img
-                            src={imgUrl}
-                            alt={image.alt_text || image.title || 'Photo portfolio'}
-                            className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-                            onClick={() => openImage(image)}
-                            loading={index === 0 ? 'eager' : 'lazy'}
-                          />
-                        ) : (
-                          <Image
-                            src={imgUrl}
-                            alt={image.alt_text || image.title || 'Photo portfolio'}
-                            fill
-                            sizes="100vw"
-                            className="object-cover cursor-pointer"
-                            onClick={() => openImage(image)}
-                            priority={index === 0}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
+                  {images.map((image, index) => (
+                    <div
+                      key={image.id || index}
+                      className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                    >
+                      <Image
+                        src={image.secure_url || image.image_url || image.thumbnail_url}
+                        alt={image.alt_text || image.title || 'Photo portfolio'}
+                        fill
+                        unoptimized
+                        sizes="100vw"
+                        className="object-cover cursor-pointer"
+                        onClick={() => openImage(image)}
+                        priority={index === 0}
+                      />
+                    </div>
+                  ))}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                 </div>
 
@@ -229,11 +221,7 @@ export default function Home() {
                         index === currentImageIndex ? 'ring-2 ring-accent ring-offset-2 scale-105' : 'opacity-60 hover:opacity-100'
                       }`}
                     >
-                      {(image.thumbnail_url || image.image_url).startsWith('/media/') || (image.thumbnail_url || image.image_url).includes('/media/') ? (
-                        <img src={image.thumbnail_url || image.image_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <Image src={image.thumbnail_url || image.image_url} alt="" width={80} height={80} className="w-full h-full object-cover" />
-                      )}
+                      <Image src={image.secure_url || image.thumbnail_url || image.image_url} alt="" width={80} height={80} unoptimized className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -266,11 +254,7 @@ export default function Home() {
                     <div className="image-hover rounded-xl overflow-hidden shadow-lg bg-white">
                       <div className="aspect-[4/3] relative">
                         {gallery.cover_url ? (
-                          (gallery.cover_url.startsWith('/media/') || gallery.cover_url.includes('/media/')) ? (
-                            <img src={gallery.cover_url} alt={gallery.name} className="absolute inset-0 w-full h-full object-cover" />
-                          ) : (
-                            <Image src={gallery.cover_url} alt={gallery.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
-                          )
+                          <Image src={gallery.cover_url} alt={gallery.name} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                             <svg className="w-16 h-16 text-slate-grey" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -364,6 +348,7 @@ export default function Home() {
               alt={selectedImage.alt_text || selectedImage.title || "Photo agrandie"}
               width={1600}
               height={1200}
+              unoptimized
               className="max-h-[85vh] w-auto object-contain rounded-lg"
             />
             {selectedImage.title && <p className="text-white/80 text-center mt-4 font-light">{selectedImage.title}</p>}
