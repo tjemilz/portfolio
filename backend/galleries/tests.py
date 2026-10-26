@@ -168,3 +168,229 @@ class GalleryAndAccessGroupTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         ids = [item['id'] for item in res.data]
         self.assertIn(req.id, ids)
+
+
+class MigrateV1DataCommandTests(TestCase):
+    def test_migration_from_v1_database(self):
+        """Verify migrate_v1_data successfully imports all models and relations from a legacy v1 sqlite db."""
+        import sqlite3
+        import tempfile
+        import os
+        from django.core.management import call_command
+
+        with tempfile.NamedTemporaryFile(suffix='.sqlite3', delete=False) as f:
+            v1_db_path = f.name
+
+        try:
+            conn = sqlite3.connect(v1_db_path)
+            cur = conn.cursor()
+
+            # 1. Create legacy tables
+            cur.execute("""
+                CREATE TABLE authentication_customuser (
+                    id INTEGER PRIMARY KEY,
+                    password VARCHAR(128),
+                    last_login DATETIME,
+                    is_superuser BOOLEAN,
+                    username VARCHAR(150),
+                    first_name VARCHAR(150),
+                    last_name VARCHAR(150),
+                    email VARCHAR(254),
+                    is_staff BOOLEAN,
+                    is_active BOOLEAN,
+                    date_joined DATETIME,
+                    role VARCHAR(10),
+                    phone VARCHAR(20),
+                    bio TEXT,
+                    avatar VARCHAR(100),
+                    invitation_token VARCHAR(100),
+                    invitation_sent_at DATETIME,
+                    created_at DATETIME,
+                    updated_at DATETIME,
+                    invited_by_id INTEGER
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_usergroup (
+                    id INTEGER PRIMARY KEY,
+                    name VARCHAR(100),
+                    description TEXT,
+                    created_at DATETIME,
+                    updated_at DATETIME
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_usergroup_members (
+                    id INTEGER PRIMARY KEY,
+                    usergroup_id INTEGER,
+                    customuser_id INTEGER
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_gallery (
+                    id INTEGER PRIMARY KEY,
+                    name VARCHAR(200),
+                    slug VARCHAR(200),
+                    description TEXT,
+                    gallery_type VARCHAR(20),
+                    event_key VARCHAR(100),
+                    event_date DATE,
+                    event_location VARCHAR(255),
+                    visibility VARCHAR(10),
+                    cover_image VARCHAR(100),
+                    created_by_id INTEGER,
+                    created_at DATETIME,
+                    updated_at DATETIME,
+                    is_featured BOOLEAN,
+                    display_order INTEGER,
+                    allow_download BOOLEAN
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_gallery_allowed_groups (
+                    id INTEGER PRIMARY KEY,
+                    gallery_id INTEGER,
+                    usergroup_id INTEGER
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_image (
+                    id INTEGER PRIMARY KEY,
+                    image VARCHAR(100),
+                    thumbnail VARCHAR(100),
+                    title VARCHAR(200),
+                    alt_text VARCHAR(200),
+                    description TEXT,
+                    width INTEGER,
+                    height INTEGER,
+                    size INTEGER,
+                    mime_type VARCHAR(50),
+                    display_order INTEGER,
+                    is_cover BOOLEAN,
+                    views_count INTEGER,
+                    downloads_count INTEGER,
+                    created_at DATETIME,
+                    updated_at DATETIME
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_image_galleries (
+                    id INTEGER PRIMARY KEY,
+                    image_id INTEGER,
+                    gallery_id INTEGER
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_printrequest (
+                    id INTEGER PRIMARY KEY,
+                    user_id INTEGER,
+                    status VARCHAR(20),
+                    notes TEXT,
+                    admin_notes TEXT,
+                    created_at DATETIME,
+                    updated_at DATETIME
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE galleries_printrequestitem (
+                    id INTEGER PRIMARY KEY,
+                    request_id INTEGER,
+                    image_id INTEGER,
+                    print_size VARCHAR(10),
+                    quantity INTEGER,
+                    custom_size VARCHAR(100),
+                    created_at DATETIME
+                )
+            """)
+
+            # 2. Insert dummy legacy data
+            cur.execute("""
+                INSERT INTO authentication_customuser (id, username, password, email, role, is_staff, is_active, is_superuser)
+                VALUES (1, 'legacy_tester', 'pbkdf2_sha256$test$hashed', 'legacy@test.com', 'PRIVATE', 0, 1, 0)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_usergroup (id, name, description)
+                VALUES (10, 'Legacy VIPs', 'VIP customers')
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_usergroup_members (id, usergroup_id, customuser_id)
+                VALUES (1, 10, 1)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_gallery (id, name, slug, description, visibility, gallery_type, is_featured, display_order, allow_download)
+                VALUES (20, 'Legacy Wedding Album', 'legacy-wedding', 'Old wedding photos', 'PRIVATE', 'EVENT', 1, 0, 1)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_gallery_allowed_groups (id, gallery_id, usergroup_id)
+                VALUES (1, 20, 10)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_image (id, image, title, width, height, display_order)
+                VALUES (30, 'galleries/images/vintage_car.jpg', 'Vintage Car', 1920, 1080, 1)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_image_galleries (id, image_id, gallery_id)
+                VALUES (1, 30, 20)
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_printrequest (id, user_id, status, notes)
+                VALUES (40, 1, 'PENDING', 'Need 2 prints on vintage paper')
+            """)
+
+            cur.execute("""
+                INSERT INTO galleries_printrequestitem (id, request_id, image_id, print_size, quantity, custom_size)
+                VALUES (50, 40, 30, '10x15', 2, '')
+            """)
+
+            conn.commit()
+            conn.close()
+
+            # 3. Execute migration command
+            call_command('migrate_v1_data', v1_db_path)
+
+            # 4. Assert migrations in v2 database
+            migrated_user = User.objects.filter(username='legacy_tester').first()
+            self.assertIsNotNone(migrated_user)
+            self.assertEqual(migrated_user.role, 'PRIVATE')
+            self.assertEqual(migrated_user.email, 'legacy@test.com')
+
+            migrated_group = AccessGroup.objects.filter(name='Legacy VIPs').first()
+            self.assertIsNotNone(migrated_group)
+            self.assertTrue(migrated_group.members.filter(id=migrated_user.id).exists())
+
+            migrated_gallery = Gallery.objects.filter(slug='legacy-wedding').first()
+            self.assertIsNotNone(migrated_gallery)
+            self.assertEqual(migrated_gallery.title, 'Legacy Wedding Album')
+            self.assertTrue(migrated_gallery.allowed_groups.filter(id=migrated_group.id).exists())
+
+            migrated_image = Image.objects.filter(file='galleries/images/vintage_car.jpg').first()
+            self.assertIsNotNone(migrated_image)
+            self.assertEqual(migrated_image.title, 'Vintage Car')
+            self.assertTrue(migrated_image.galleries.filter(id=migrated_gallery.id).exists())
+
+            migrated_pr = PrintRequest.objects.filter(user=migrated_user).first()
+            self.assertIsNotNone(migrated_pr)
+            self.assertEqual(migrated_pr.notes, 'Need 2 prints on vintage paper')
+            self.assertEqual(migrated_pr.items.count(), 1)
+            item = migrated_pr.items.first()
+            self.assertEqual(item.image, migrated_image)
+            self.assertEqual(item.quantity, 2)
+
+        finally:
+            if os.path.exists(v1_db_path):
+                os.remove(v1_db_path)
